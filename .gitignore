@@ -1,0 +1,23 @@
+##############################
+## OS X
+##############################
+.DS_Store
+
+##############################
+## Eclipse
+##############################
+.settings/
+bin/
+tmp/
+.metadata
+.classpath
+.project
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.factorypath
+
+studentdb
