@@ -27,13 +27,18 @@ public class Lexer {
 //Methods to check the status of the current token
    
    /**
-    * Returns true if the current token is
-    * the specified delimiter character.
-    * @param d a character denoting the delimiter
+    * Returns true if the current token is at least one of
+    * the specified delimiter character(s).
+    * @param d a character (or array of characters) denoting the delimiter
     * @return true if the delimiter is the current token
     */
-   public boolean matchDelim(char d) {
-      return d == (char)tok.ttype;
+   public boolean matchDelim(char ...d) {
+      for (char c: d) {
+         if (c == (char)tok.ttype) {
+            return true;
+         }
+      }
+      return false;
    }
    
    /**
@@ -51,7 +56,7 @@ public class Lexer {
    public boolean matchStringConstant() {
       return '\'' == (char)tok.ttype;
    }
-   
+
    /**
     * Returns true if the current token is the specified keyword.
     * @param w the keyword string
@@ -82,7 +87,7 @@ public class Lexer {
          throw new BadSyntaxException();
       nextToken();
    }
-   
+
    /**
     * Throws an exception if the current token is not 
     * an integer. 

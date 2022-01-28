@@ -1,5 +1,7 @@
 package simpledb.parse;
 
+import simpledb.query.Operator;
+
 public class PredParser {
    private Lexer lex;
 
@@ -18,6 +20,33 @@ public class PredParser {
          lex.eatIntConstant();
    }
 
+   /**
+    * Operator lexer
+    * TODO: Refactor into Lexer logic
+    */
+   public void operator() {
+      String opStr = "";
+      while (lex.matchDelim('=', '!', '<', '>')) {
+         if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            opStr += "=";
+         } else if (lex.matchDelim('!')) {
+            lex.eatDelim('!');
+            opStr += "!";
+         } else if (lex.matchDelim('<')) {
+            lex.eatDelim('<');
+            opStr += "<";
+         } else if (lex.matchDelim('>')) {
+            lex.eatDelim('>');
+            opStr += ">";
+         }
+      }
+      // throw error if invalid operator
+      if (!Operator.isValidOpString(opStr)) {
+         throw new BadSyntaxException();
+      }
+   }
+
    public void expression() {
       if (lex.matchId())
          field();
@@ -27,7 +56,7 @@ public class PredParser {
 
    public void term() {
       expression();
-      lex.eatDelim('=');
+      operator();
       expression();
    }
 
