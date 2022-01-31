@@ -35,12 +35,42 @@ public class Parser {
       else
          return new Expression(constant());
    }
+
+   /**
+    * Operator lexer
+    * TODO: Refactor into Lexer logic
+    */
+   public Operator operator() {
+      String opStr = "";
+      while (lex.matchDelim('=', '!', '<', '>')) {
+         if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            opStr += "=";
+         } else if (lex.matchDelim('!')) {
+            lex.eatDelim('!');
+            opStr += "!";
+         } else if (lex.matchDelim('<')) {
+            lex.eatDelim('<');
+            opStr += "<";
+         } else if (lex.matchDelim('>')) {
+            lex.eatDelim('>');
+            opStr += ">";
+         }
+      }
+
+      // throw error if invalid operator
+      if (!Operator.isValidOpString(opStr)) {
+         throw new BadSyntaxException();
+      }
+
+      return new Operator(opStr);
+   }
    
    public Term term() {
       Expression lhs = expression();
-      lex.eatDelim('=');
+      Operator op = operator();
       Expression rhs = expression();
-      return new Term(lhs, rhs);
+      return new Term(lhs, rhs, op);
    }
    
    public Predicate predicate() {
