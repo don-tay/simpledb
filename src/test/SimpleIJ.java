@@ -15,9 +15,9 @@ public class SimpleIJ {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-//		Default to studentdb for faster testing 
-//		System.out.print("Enter the name of DB to connect: ");
-//		String dbName = (sc.hasNext()) ? sc.next().trim() : DEFAULT_DB_NAME;
+		// Default to studentdb for faster testing
+		// System.out.print("Enter the name of DB to connect: ");
+		// String dbName = (sc.hasNext()) ? sc.next().trim() : DEFAULT_DB_NAME;
 		String dbName = DEFAULT_DB_NAME;
 
 		try {
@@ -83,7 +83,7 @@ public class SimpleIJ {
 				System.out.println();
 			}
 		} catch (Exception e) {
-			System.out.println("SQL Exception: " + e.getMessage());
+			System.out.println("SQL Exception: " + e.toString());
 		}
 	}
 
@@ -93,7 +93,7 @@ public class SimpleIJ {
 			tx.commit();
 			System.out.println(numRecordsUpdated + " records processed");
 		} catch (Exception e) {
-			System.out.println("Exception: " + e.getMessage());
+			System.out.println("Exception: " + e.toString());
 		}
 	}
 }
