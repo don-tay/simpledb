@@ -29,7 +29,9 @@ public class CreateStudentDB {
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = { "(1, 'joe', 10, 2021)", "(2, 'amy', 20, 2020)", "(3, 'max', 10, 2022)",
                "(4, 'sue', 20, 2022)", "(5, 'bob', 30, 2020)", "(6, 'kim', 20, 2020)", "(7, 'art', 30, 2021)",
-               "(8, 'pat', 20, 2019)", "(9, 'lee', 10, 2021)" };
+               "(8, 'pat', 20, 2019)", "(9, 'lee', 10, 2021)", "(10, 'alan', 30, 2022)", "(11, 'ben', 30, 2022)",
+               "(12, 'cathy', 10, 2023)", "(13, 'don', 10, 2022)", "(14, 'eames', 30, 2021)",
+               "(15, 'francis', 10, 2021)", "(16, 'gary', 30, 2022)", "(17, 'henry', 10, 2020)" };
          for (int i = 0; i < studvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + studvals[i], tx);
          System.out.println(numRecordsUpdated + " STUDENT records inserted.");
