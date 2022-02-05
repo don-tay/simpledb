@@ -10,6 +10,7 @@ import java.io.*;
 public class Lexer {
    private Collection<String> keywords;
    private StreamTokenizer tok;
+   private Collection<String> indexKeyWords;
    
    /**
     * Creates a new lexical analyzer for SQL statement s.
@@ -17,6 +18,7 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
+      initIndexKeyWords();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
@@ -154,7 +156,13 @@ public class Lexer {
    
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
-                               "insert", "into", "values", "delete", "update", "set", 
-                               "create", "table", "int", "varchar", "view", "as", "index", "on");
+                               "insert", "into", "values", "delete","update",
+                               "set",  "create", "table", "int", "varchar",
+                               "view", "as", "index", "on", "using");
+   }
+
+   private void initIndexKeyWords() {
+      indexKeyWords = Arrays.asList("hash", "btree");
    }
 }
+
