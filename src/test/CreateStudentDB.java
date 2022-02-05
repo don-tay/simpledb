@@ -20,7 +20,7 @@ public class CreateStudentDB {
 
          System.out.println("Table STUDENT created.");
 
-         s = "create index student_sid_idx on student (sid)";
+         s = "create index student_sid_idx on student (sid) using hash";
 
          numRecordsUpdated = planner.executeUpdate(s, tx);
 
