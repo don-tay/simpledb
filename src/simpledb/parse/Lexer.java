@@ -10,6 +10,10 @@ import java.io.*;
 public class Lexer {
    private Collection<String> keywords;
    private StreamTokenizer tok;
+   private Collection<String> indexTypes;
+   public static final String INDEX_TYPE_HASH = "hash";
+   public static final String INDEX_TYPE_BTREE = "btree";
+
    
    /**
     * Creates a new lexical analyzer for SQL statement s.
@@ -17,6 +21,7 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
+      initIndexType();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
@@ -74,6 +79,14 @@ public class Lexer {
       return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
    }
    
+   /**
+    * Returns true if the current token is a legal index type.
+    * @return true if the current token is an index type
+    */
+    public boolean matchIndexType() {
+      return  tok.ttype==StreamTokenizer.TT_WORD && indexTypes.contains(tok.sval);
+   }
+
 //Methods to "eat" the current token
    
    /**
@@ -142,6 +155,23 @@ public class Lexer {
       nextToken();
       return s;
    }
+
+   /**
+    * Throws an exception if the current token is not 
+    * an accepted index type (hash or btree). 
+    * Otherwise, returns the index type 
+    * and moves to the next token.
+    * @return the string value of the current token
+    */
+    public String eatIndexType() {
+      if (!matchIndexType()) {
+         System.out.println(tok.sval);
+         throw new BadSyntaxException();
+      }
+      String s = tok.sval;
+      nextToken();
+      return s;
+   }
    
    private void nextToken() {
       try {
@@ -155,6 +185,10 @@ public class Lexer {
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
-                               "create", "table", "int", "varchar", "view", "as", "index", "on");
+                               "create", "table", "int", "varchar", "view", "as", "index", "on", "using");
+   }
+
+   private void initIndexType() {
+      indexTypes = Arrays.asList(INDEX_TYPE_HASH, INDEX_TYPE_BTREE);
    }
 }
