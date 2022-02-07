@@ -6,6 +6,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch IndexSelectTest",
+      "request": "launch",
+      "mainClass": "simpledb.index.query.IndexSelectTest",
+      "projectName": "simpledb_909bac0a"
+    },
+    {
+      "type": "java",
+      "name": "Launch IndexRetrievalTest",
+      "request": "launch",
+      "mainClass": "simpledb.index.IndexRetrievalTest",
+      "projectName": "simpledb_909bac0a"
+    },
+    {
+      "type": "java",
       "name": "Launch Current File",
       "request": "launch",
       "mainClass": "${file}"

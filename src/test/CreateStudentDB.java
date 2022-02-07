@@ -1,12 +1,31 @@
 package test;
 
+import java.io.File;
+
 import simpledb.plan.Planner;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 
 public class CreateStudentDB {
+
+   private static void deleteDbDirFiles(File dbDir) {
+      for (File subfile : dbDir.listFiles()) {
+         if (subfile.isDirectory()) {
+            deleteDbDirFiles(dbDir);
+         }
+         subfile.delete();
+      }
+   }
+
    public static void main(String[] args) {
       try {
+         File dbDir = new File("studentdb");
+         // delete db directory if exists
+         if (dbDir.exists()) {
+            deleteDbDirFiles(dbDir);
+            dbDir.delete();
+         }
+
          // analogous to the driver
          SimpleDB db = new SimpleDB("studentdb");
 
@@ -20,17 +39,17 @@ public class CreateStudentDB {
 
          System.out.println("Table STUDENT created.");
 
-         // s = "create index student_sid_idx on STUDENT(MajorId) using btree";
-
-         // numRecordsUpdated = planner.executeUpdate(s, tx);
-
-         // System.out.println("Index student_majorId_idx created on STUDENT(MajorId) using btree.");
-
-         s = "create index student_sid_idx on STUDENT(MajorId) using hash";
+         s = "create index stu_sid_idx on student(sid) using hash";
 
          numRecordsUpdated = planner.executeUpdate(s, tx);
 
-         System.out.println("Index student_majorId_idx created on STUDENT(MajorId) using hash.");
+         System.out.println("BTree index stu_sid_idx created on STUDENT (sid).");
+
+         s = "create index stu_majorid_idx on student(majorid) using btree";
+
+         numRecordsUpdated = planner.executeUpdate(s, tx);
+
+         System.out.println("Hash index stu_majorid_idx created on STUDENT (majorid).");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = { "(1, 'joe', 10, 2021)", "(2, 'amy', 20, 2020)", "(3, 'max', 10, 2022)",
