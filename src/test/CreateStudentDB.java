@@ -20,11 +20,17 @@ public class CreateStudentDB {
 
          System.out.println("Table STUDENT created.");
 
-         s = "create index student_sid_idx on student (sid)";
+         // s = "create index student_sid_idx on STUDENT(MajorId) using btree";
+
+         // numRecordsUpdated = planner.executeUpdate(s, tx);
+
+         // System.out.println("Index student_majorId_idx created on STUDENT(MajorId) using btree.");
+
+         s = "create index student_sid_idx on STUDENT(MajorId) using hash";
 
          numRecordsUpdated = planner.executeUpdate(s, tx);
 
-         System.out.println("Index student_sid_idx created on STUDENT (sid).");
+         System.out.println("Index student_majorId_idx created on STUDENT(MajorId) using hash.");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = { "(1, 'joe', 10, 2021)", "(2, 'amy', 20, 2020)", "(3, 'max', 10, 2022)",
