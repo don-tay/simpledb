@@ -90,7 +90,7 @@ public class Parser {
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
-      List<String> sortfields = new ArrayList<>();
+      List<SortField> sortfields = new ArrayList<>();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
@@ -99,7 +99,7 @@ public class Parser {
          lex.eatKeyword("order");
          lex.eatKeyword("by");
          // TODO: handle optional 'asc' and 'desc' keywords
-         sortfields = selectList();
+         sortfields = sortList();
       }
       return new QueryData(fields, tables, pred, sortfields);
    }
@@ -110,6 +110,24 @@ public class Parser {
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
          L.addAll(selectList());
+      }
+      return L;
+   }
+
+   private List<SortField> sortList() {
+      List<SortField> L = new ArrayList<>();
+      String field = field();
+      String order = "asc";
+      if (lex.matchKeyword("asc")) {
+         lex.eatKeyword("asc");
+      } else if (lex.matchKeyword("desc")) {
+         lex.eatKeyword("desc");
+         order = "desc";
+      }
+      L.add(new SortField(field, order));
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         L.addAll(sortList());
       }
       return L;
    }

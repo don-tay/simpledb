@@ -13,12 +13,12 @@ public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
    private Predicate pred;
-   private List<String> sortfields;
+   private List<SortField> sortfields;
 
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> sortfields) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<SortField> sortfields) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
@@ -58,7 +58,7 @@ public class QueryData {
     * 
     * @return a list of field names
     */
-   public List<String> sortfields() {
+   public List<SortField> sortfields() {
       return sortfields;
    }
 
@@ -76,8 +76,8 @@ public class QueryData {
          result += " where " + predstring;
       if (!sortfields.isEmpty()) {
          result += " order by ";
-         for (String sortfield : sortfields) {
-            result += sortfield + ", ";
+         for (SortField sortfield : sortfields) {
+            result += sortfield.toString() + ", ";
          }
          result = result.substring(0, result.length() - 2); // remove final comma
       }
