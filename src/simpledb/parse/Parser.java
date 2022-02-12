@@ -98,7 +98,6 @@ public class Parser {
       if (lex.matchKeyword("order")) {
          lex.eatKeyword("order");
          lex.eatKeyword("by");
-         // TODO: handle optional 'asc' and 'desc' keywords
          sortfields = sortList();
       }
       return new QueryData(fields, tables, pred, sortfields);
