@@ -28,11 +28,11 @@ public class GroupByPlan implements Plan {
     * @param tx          the calling transaction
     */
    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      List<SortField> sortField = new ArrayList<>();
+      List<SortField> sortfields = new ArrayList<>();
       for (String field : groupfields) {
-         sortField.add(new SortField(field, "asc"));
+         sortfields.add(new SortField(field, "asc"));
       }
-      this.p = new SortPlan(tx, p, sortField);
+      this.p = new SortPlan(tx, p, sortfields);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)
