@@ -38,7 +38,8 @@ public class Parser {
    }
 
    /**
-    * Operator lexer TODO: Refactor into Lexer logic
+    * Operator lexer 
+    * TODO: Refactor into Lexer logic
     */
    public Operator operator() {
       String opStr = "";
