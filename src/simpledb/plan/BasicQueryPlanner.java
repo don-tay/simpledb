@@ -44,14 +44,13 @@ public class BasicQueryPlanner implements QueryPlanner {
       // Step 3: Add a selection plan for the predicate
       p = new SelectPlan(p, data.pred());
 
-      // Step 4: Project on the field names
-      p = new ProjectPlan(p, data.fields());
-
-      // Step 5: Sort on the records
+      // Step 4: Sort on the records
       if(!data.sortfields().isEmpty()) {
          p = new SortPlan(tx, p, data.sortfields());
       }
-      
+
+      // Step 5: Project on the field names
+      p = new ProjectPlan(p, data.fields());
 
       return p;
    }
