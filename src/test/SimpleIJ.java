@@ -82,6 +82,7 @@ public class SimpleIJ {
 				}
 				System.out.println();
 			}
+			tx.commit();
 		} catch (Exception e) {
 			System.out.println("SQL Exception: " + e.toString());
 		}
