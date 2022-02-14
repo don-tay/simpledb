@@ -46,13 +46,13 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             currentplan = getLowestProductPlan(currentplan);
       }
 
-      // Step 4. Project on the field names and return
-      currentplan = new ProjectPlan(currentplan, data.fields());
-
-      // Step 5: Sort on the records
+      // Step 4. Sort on the records
       if (!data.sortfields().isEmpty()) {
          currentplan = new SortPlan(tx, currentplan, data.sortfields());
       }
+
+      // Step 5: Project on the field names and return
+      currentplan = new ProjectPlan(currentplan, data.fields());
 
       return currentplan;
    }
