@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch PlannerTest1",
+      "request": "launch",
+      "mainClass": "simpledb.plan.PlannerTest1",
+      "projectName": "simpledb_909bac0a"
+    },
+    {
+      "type": "java",
       "name": "Launch IndexSelectTest",
       "request": "launch",
       "mainClass": "simpledb.index.query.IndexSelectTest",
