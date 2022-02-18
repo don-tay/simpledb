@@ -64,6 +64,8 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
+      // Implement QueryPlanner check here?
+      Plan j = makeSortMergeJoin(current, currsch);
       Plan p = makeIndexJoin(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
@@ -106,6 +108,10 @@ class TablePlanner {
       return null;
    }
    
+   private Plan makeSortMergeJoin(Plan current, Schema currsch) {
+      return null;
+   }
+
    private Plan makeProductJoin(Plan current, Schema currsch) {
       Plan p = makeProductPlan(current);
       return addJoinPred(p, currsch);
