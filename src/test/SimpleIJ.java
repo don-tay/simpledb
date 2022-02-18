@@ -69,6 +69,7 @@ public class SimpleIJ {
 			Scan s = p.open();
 			// print records
 			while (s.next()) {
+				// TODO: Fix null pointer bug which is thrown here
 				for (String fieldName : fieldNames) {
 					int fldtype = p.schema().type(fieldName);
 					String fmt = "%" + fieldName.length();
@@ -84,7 +85,7 @@ public class SimpleIJ {
 			}
 			tx.commit();
 		} catch (Exception e) {
-			System.out.println("SQL Exception: " + e.toString());
+			System.out.println("SQL Exception: " + e);
 		}
 	}
 
