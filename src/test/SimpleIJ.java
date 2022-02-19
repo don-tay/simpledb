@@ -69,7 +69,6 @@ public class SimpleIJ {
 			Scan s = p.open();
 			// print records
 			while (s.next()) {
-				// TODO: Fix null pointer bug which is thrown here
 				for (String fieldName : fieldNames) {
 					int fldtype = p.schema().type(fieldName);
 					String fmt = "%" + fieldName.length();

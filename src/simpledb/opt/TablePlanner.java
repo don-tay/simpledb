@@ -66,8 +66,8 @@ class TablePlanner {
       if (joinpred == null)
          return null;
       // TODO: Implement QueryPlanner check here
-      //Plan p = makeSortMergeJoin(current, currsch);
-      Plan p = makeIndexJoin(current, currsch);
+      Plan p = makeSortMergeJoin(current, currsch);
+      //Plan p = makeIndexJoin(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
