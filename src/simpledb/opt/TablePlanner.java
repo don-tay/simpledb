@@ -68,6 +68,7 @@ class TablePlanner {
       // TODO: Implement QueryPlanner check here
       Plan p = makeSortMergeJoin(current, currsch);
       //Plan p = makeIndexJoin(current, currsch);
+      //Plan p = makeNestedLoopJoin(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -97,6 +98,7 @@ class TablePlanner {
    }
    
    private Plan makeIndexJoin(Plan current, Schema currsch) {
+      System.out.println("Running index join");
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
@@ -116,6 +118,19 @@ class TablePlanner {
          if (outerfield != null) {
             // TODO: Optimise which plan should come first
             Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
+            p = addSelectPred(p);
+            return addJoinPred(p, currsch);
+         }
+      }
+      return null;
+   }
+
+   private Plan makeNestedLoopJoin(Plan current, Schema currsch) {
+      System.out.println("Running nested loop join");
+      for (String fldname : myschema.fields()) {
+         String outerfield = mypred.equatesWithField(fldname);
+         if (outerfield != null && currsch.hasField(outerfield)) {
+            Plan p = new NestedLoopsJoinPlan(current, myplan, outerfield);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }
