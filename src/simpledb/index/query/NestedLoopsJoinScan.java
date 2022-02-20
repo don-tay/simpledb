@@ -53,12 +53,13 @@ public class NestedLoopsJoinScan implements Scan {
     * record. When LHS runs out of records, return false.
     */
    public boolean next() {
-
       while (true) {
          boolean hasmore2 = rhs.next();
          if (hasmore2 && rhs.getVal(fldname2).equals(joinval))
             return true;
          boolean hasmore1 = lhs.next();
+         if (!hasmore1)
+            return false;
          while (hasmore1 && hasmore2) {
             Constant v1 = lhs.getVal(fldname1);
             Constant v2 = rhs.getVal(fldname2);
@@ -70,8 +71,6 @@ public class NestedLoopsJoinScan implements Scan {
                hasmore2 = rhs.next();
             }
          }
-         if (!hasmore1)
-            return false;
          rhs.beforeFirst();
       }
    }
