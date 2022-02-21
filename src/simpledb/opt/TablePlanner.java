@@ -68,7 +68,7 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = getBestJoinMethod(current, currsch);
+      Plan p = makeBestJoinMethod(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -97,7 +97,7 @@ class TablePlanner {
       return null;
    }
 
-   private Plan getBestJoinMethod(Plan current, Schema currsch) {
+   private Plan makeBestJoinMethod(Plan current, Schema currsch) {
       Optional<Plan> p1 = Optional.empty();
       Optional<Plan> p2 = Optional.empty();
       Optional<Plan> p3 = Optional.empty();
