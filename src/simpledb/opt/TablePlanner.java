@@ -120,9 +120,9 @@ class TablePlanner {
          }
       }
 
-      int p1Cost = p1.isPresent() ? p1.get().recordsOutput() : Integer.MAX_VALUE;
-      int p2Cost = p2.isPresent() ? p2.get().recordsOutput() : Integer.MAX_VALUE;
-      int p3Cost = p3.isPresent() ? p3.get().recordsOutput() : Integer.MAX_VALUE;
+      int p1Cost = p1.isPresent() ? p1.get().blocksAccessed() : Integer.MAX_VALUE;
+      int p2Cost = p2.isPresent() ? p2.get().blocksAccessed() : Integer.MAX_VALUE;
+      int p3Cost = p3.isPresent() ? p3.get().blocksAccessed() : Integer.MAX_VALUE;
 
       Plan bestplan = p1.orElse(null);
 
