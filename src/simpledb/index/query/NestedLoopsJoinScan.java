@@ -62,13 +62,12 @@ public class NestedLoopsJoinScan implements Scan {
             return false;
          }
          boolean hasmore2 = rhs.next();
-         Constant v1 = lhs.getVal(fldname1);
+         joinval = lhs.getVal(fldname1);
 
          while (hasmore2) {
             Constant v2 = rhs.getVal(fldname2);
 
-            if (v1.compareTo(v2) == 0) {
-               joinval = v1;
+            if (joinval.compareTo(v2) == 0) {
                return true;
             }
 
