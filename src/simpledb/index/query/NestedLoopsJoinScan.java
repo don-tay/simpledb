@@ -9,7 +9,7 @@ public class NestedLoopsJoinScan implements Scan {
    private Constant joinval = null;
 
    /**
-    * Creates an index join scan for the specified LHS scan and RHS scan.
+    * Creates an nested block loop scan for the specified LHS scan and RHS scan.
     * 
     * @param lhs      the LHS scan
     * @param rhs      the RHS scan
