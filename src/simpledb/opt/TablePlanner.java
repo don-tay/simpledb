@@ -66,9 +66,7 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-
       Plan p = getBestJoinMethod(current, currsch);
-
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -130,7 +128,8 @@ class TablePlanner {
       for (String fldname : myschema.fields()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new NestedLoopsJoinPlan(current, myplan, outerfield);
+            // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
+            Plan p = new NestedLoopsJoinPlan(current, myplan, outerfield, fldname);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }

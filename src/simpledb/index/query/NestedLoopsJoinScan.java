@@ -5,20 +5,22 @@ import simpledb.query.Scan;
 
 public class NestedLoopsJoinScan implements Scan {
    private Scan lhs, rhs;
-   private String joinfield;
+   private String fldname1, fldname2;
+   private Constant joinval = null;
 
    /**
-    * Creates an index join scan for the specified LHS scan and RHS index.
+    * Creates an nested block loop scan for the specified LHS scan and RHS scan.
     * 
-    * @param lhs       the LHS scan
-    * @param idx       the RHS index
-    * @param joinfield the LHS field used for joining
-    * @param rhs       the RHS scan
+    * @param lhs      the LHS scan
+    * @param rhs      the RHS scan
+    * @param fldname1 the LHS join field
+    * @param fldname2 the RHS join field
     */
-   public NestedLoopsJoinScan(Scan lhs, String joinfield, Scan rhs) {
+   public NestedLoopsJoinScan(Scan lhs, Scan rhs, String fldname1, String fldname2) {
       this.lhs = lhs;
       this.rhs = rhs;
-      this.joinfield = joinfield;
+      this.fldname1 = fldname1;
+      this.fldname2 = fldname2;
       beforeFirst();
    }
 
@@ -51,8 +53,30 @@ public class NestedLoopsJoinScan implements Scan {
     * record. When LHS runs out of records, return false.
     */
    public boolean next() {
-      // TODO: Implement method
-      return false;
+      while (true) {
+         boolean hasmore1 = true;
+         if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
+            hasmore1 = lhs.next();
+         }
+         if (!hasmore1) {
+            return false;
+         }
+         boolean hasmore2 = rhs.next();
+         joinval = lhs.getVal(fldname1);
+
+         while (hasmore2) {
+            Constant v2 = rhs.getVal(fldname2);
+
+            if (joinval.compareTo(v2) == 0) {
+               return true;
+            }
+
+            hasmore2 = rhs.next();
+         }
+         // revert rhs to start if no more
+         joinval = null;
+         rhs.beforeFirst();
+      }
    }
 
    /**
