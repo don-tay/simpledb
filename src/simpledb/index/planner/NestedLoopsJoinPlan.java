@@ -48,7 +48,7 @@ public class NestedLoopsJoinPlan implements Plan {
     * @see simpledb.plan.Plan#blocksAccessed()
     */
    public int blocksAccessed() {
-      return p1.blocksAccessed() + (p1.blocksAccessed() * p2.blocksAccessed());
+      return p1.blocksAccessed() + (p1.recordsOutput() * p2.blocksAccessed());
    }
 
    /**

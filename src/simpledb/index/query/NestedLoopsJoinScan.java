@@ -54,23 +54,28 @@ public class NestedLoopsJoinScan implements Scan {
     */
    public boolean next() {
       while (true) {
-         boolean hasmore2 = rhs.next();
-         if (hasmore2 && rhs.getVal(fldname2).equals(joinval))
-            return true;
-         boolean hasmore1 = lhs.next();
-         if (!hasmore1)
+         boolean hasmore1 = true;
+         if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
+            hasmore1 = lhs.next();
+         }
+         if (!hasmore1) {
             return false;
-         while (hasmore1 && hasmore2) {
-            Constant v1 = lhs.getVal(fldname1);
+         }
+         boolean hasmore2 = rhs.next();
+         Constant v1 = lhs.getVal(fldname1);
+
+         while (hasmore2) {
             Constant v2 = rhs.getVal(fldname2);
 
             if (v1.compareTo(v2) == 0) {
-               joinval = rhs.getVal(fldname2);
+               joinval = v1;
                return true;
-            } else {
-               hasmore2 = rhs.next();
             }
+
+            hasmore2 = rhs.next();
          }
+         // revert rhs to start if no more
+         joinval = null;
          rhs.beforeFirst();
       }
    }
