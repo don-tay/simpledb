@@ -32,8 +32,8 @@ public class SortPlan implements Plan {
    }
 
    /**
-    * This method is where most of the action is. Up to 2 sorted temporary tables
-    * are created, and are passed into SortScan for final merging.
+    * This method is where most of the action is. 1 sorted temporary table is
+    * created, and are passed into SortScan for final merging.
     * 
     * @see simpledb.plan.Plan#open()
     */
