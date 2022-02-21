@@ -42,7 +42,7 @@ public class NestedLoopsJoinPlan implements Plan {
     * Estimates the number of block accesses to compute the join. The formula is:
     * 
     * <pre>
-    * B(nestedloopjoin(p1, p2)) = B(p1) + B(p1) * B(p2)
+    * B(nestedloopjoin(p1, p2)) = B(p1) + R(p1) * B(p2)
     * </pre>
     * 
     * @see simpledb.plan.Plan#blocksAccessed()
@@ -55,7 +55,7 @@ public class NestedLoopsJoinPlan implements Plan {
     * Estimates the number of output records in the join. The formula is:
     * 
     * <pre>
-    * R(nestedloopsjoin(p1, p2)) = R(p1) + R(p2)
+    * R(nestedloopsjoin(p1, p2)) = R(p1) * R(p2)
     * </pre>
     * 
     * @see simpledb.plan.Plan#recordsOutput()
