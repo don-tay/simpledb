@@ -56,9 +56,9 @@ class TablePlanner {
 
    /**
     * Constructs a join plan of the specified plan and the table. The plan will use
-    * an indexjoin, if possible. (Which means that if an indexselect is also
-    * possible, the indexjoin operator takes precedence.) The method returns null
-    * if no join is possible.
+    * a join (nested block loop, sort merge or nested loop index), if possible. (if
+    * an indexselect is also possible, the join operator takes precedence) The
+    * method returns null if no join is possible.
     * 
     * @param current the specified plan
     * @return a join plan of the plan and this table
@@ -97,48 +97,6 @@ class TablePlanner {
       return null;
    }
 
-   private Plan makeIndexJoin(Plan current, Schema currsch) {
-      System.out.println("Running index join");
-      for (String fldname : indexes.keySet()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            IndexInfo ii = indexes.get(fldname);
-            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
-   private Plan makeSortMergeJoin(Plan current, Schema currsch) {
-      System.out.println("Running sort merge");
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null) {
-            // TODO: Optimise which plan should come first
-            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
-   private Plan makeNestedLoopJoin(Plan current, Schema currsch) {
-      System.out.println("Running nested loop join");
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
-            Plan p = new NestedLoopsJoinPlan(current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
    private Plan getBestJoinMethod(Plan current, Schema currsch) {
       Optional<Plan> p1 = Optional.empty();
       Optional<Plan> p2 = Optional.empty();
@@ -165,8 +123,6 @@ class TablePlanner {
       int p1Cost = p1.isPresent() ? p1.get().recordsOutput() : Integer.MAX_VALUE;
       int p2Cost = p2.isPresent() ? p2.get().recordsOutput() : Integer.MAX_VALUE;
       int p3Cost = p3.isPresent() ? p3.get().recordsOutput() : Integer.MAX_VALUE;
-
-      System.out.println("p1Cost: " + p1Cost + " p2Cost: " + p2Cost + " p3Cost: " + p3Cost);
 
       Plan bestplan = p1.orElse(null);
 
