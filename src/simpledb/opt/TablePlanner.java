@@ -1,6 +1,8 @@
 package simpledb.opt;
 
 import java.util.Map;
+import java.util.Optional;
+
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
@@ -54,9 +56,9 @@ class TablePlanner {
 
    /**
     * Constructs a join plan of the specified plan and the table. The plan will use
-    * an indexjoin, if possible. (Which means that if an indexselect is also
-    * possible, the indexjoin operator takes precedence.) The method returns null
-    * if no join is possible.
+    * a join (nested block loop, sort merge or nested loop index), if possible. (if
+    * an indexselect is also possible, the join operator takes precedence) The
+    * method returns null if no join is possible.
     * 
     * @param current the specified plan
     * @return a join plan of the plan and this table
@@ -66,10 +68,7 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      // TODO: Implement QueryPlanner check here
-      // Plan p = makeSortMergeJoin(current, currsch);
-      // Plan p = makeIndexJoin(current, currsch);
-      Plan p = makeNestedLoopJoin(current, currsch);
+      Plan p = makeBestJoinMethod(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -98,46 +97,51 @@ class TablePlanner {
       return null;
    }
 
-   private Plan makeIndexJoin(Plan current, Schema currsch) {
-      System.out.println("Running index join");
+   private Plan makeBestJoinMethod(Plan current, Schema currsch) {
+      Optional<Plan> p1 = Optional.empty();
+      Optional<Plan> p2 = Optional.empty();
+      Optional<Plan> p3 = Optional.empty();
+
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
-            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            p1 = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
          }
       }
-      return null;
-   }
-
-   private Plan makeSortMergeJoin(Plan current, Schema currsch) {
-      System.out.println("Running sort merge");
       for (String fldname : myschema.fields()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null) {
-            // TODO: Optimise which plan should come first
-            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            p2 = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
          }
-      }
-      return null;
-   }
-
-   private Plan makeNestedLoopJoin(Plan current, Schema currsch) {
-      System.out.println("Running nested loop join");
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
-            Plan p = new NestedLoopsJoinPlan(current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            p3 = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname));
          }
       }
-      return null;
+
+      int p1Cost = p1.isPresent() ? p1.get().recordsOutput() : Integer.MAX_VALUE;
+      int p2Cost = p2.isPresent() ? p2.get().recordsOutput() : Integer.MAX_VALUE;
+      int p3Cost = p3.isPresent() ? p3.get().recordsOutput() : Integer.MAX_VALUE;
+
+      Plan bestplan = p1.orElse(null);
+
+      if (p2Cost < p3Cost && p1Cost >= p2Cost) {
+         System.out.println("Running sort merge");
+         bestplan = p2.orElse(null);
+      } else if ((p1Cost < p2Cost && p1Cost >= p3Cost) || (p2Cost < p1Cost && p2Cost >= p3Cost)) {
+         System.out.println("Running nested loop join");
+         bestplan = p3.orElse(null);
+      } else {
+         System.out.println("Running index join");
+      }
+
+      if (bestplan == null) {
+         return null;
+      }
+
+      bestplan = addSelectPred(bestplan);
+      return addJoinPred(bestplan, currsch);
    }
 
    private Plan makeProductJoin(Plan current, Schema currsch) {
