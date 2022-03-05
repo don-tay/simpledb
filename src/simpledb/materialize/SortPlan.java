@@ -32,8 +32,8 @@ public class SortPlan implements Plan {
    }
 
    /**
-    * This method is where most of the action is. Up to 2 sorted temporary tables
-    * are created, and are passed into SortScan for final merging.
+    * This method is where most of the action is. 1 sorted temporary table is
+    * created, and are passed into SortScan for final merging.
     * 
     * @see simpledb.plan.Plan#open()
     */
@@ -41,7 +41,7 @@ public class SortPlan implements Plan {
       Scan src = p.open();
       List<TempTable> runs = splitIntoRuns(src);
       src.close();
-      while (runs.size() > 2)
+      while (runs.size() > 1)
          runs = doAMergeIteration(runs);
       return new SortScan(runs, comp);
    }

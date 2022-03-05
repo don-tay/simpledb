@@ -1,6 +1,8 @@
 package simpledb.opt;
 
 import java.util.Map;
+import java.util.Optional;
+
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
@@ -12,36 +14,37 @@ import simpledb.plan.*;
 
 /**
  * This class contains methods for planning a single table.
+ * 
  * @author Edward Sciore
  */
 class TablePlanner {
    private TablePlan myplan;
    private Predicate mypred;
    private Schema myschema;
-   private Map<String,IndexInfo> indexes;
+   private Map<String, IndexInfo> indexes;
    private Transaction tx;
-   
+
    /**
-    * Creates a new table planner.
-    * The specified predicate applies to the entire query.
-    * The table planner is responsible for determining
-    * which portion of the predicate is useful to the table,
-    * and when indexes are useful.
+    * Creates a new table planner. The specified predicate applies to the entire
+    * query. The table planner is responsible for determining which portion of the
+    * predicate is useful to the table, and when indexes are useful.
+    * 
     * @param tblname the name of the table
-    * @param mypred the query predicate
-    * @param tx the calling transaction
+    * @param mypred  the query predicate
+    * @param tx      the calling transaction
     */
    public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm) {
-      this.mypred  = mypred;
-      this.tx  = tx;
-      myplan   = new TablePlan(tx, tblname, mdm);
+      this.mypred = mypred;
+      this.tx = tx;
+      myplan = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
-      indexes  = mdm.getIndexInfo(tblname, tx);
+      indexes = mdm.getIndexInfo(tblname, tx);
    }
-   
+
    /**
-    * Constructs a select plan for the table.
-    * The plan will use an indexselect, if possible.
+    * Constructs a select plan for the table. The plan will use an indexselect, if
+    * possible.
+    * 
     * @return a select plan for the table.
     */
    public Plan makeSelectPlan() {
@@ -50,13 +53,13 @@ class TablePlanner {
          p = myplan;
       return addSelectPred(p);
    }
-   
+
    /**
-    * Constructs a join plan of the specified plan
-    * and the table.  The plan will use an indexjoin, if possible.
-    * (Which means that if an indexselect is also possible,
-    * the indexjoin operator takes precedence.)
-    * The method returns null if no join is possible.
+    * Constructs a join plan of the specified plan and the table. The plan will use
+    * a join (nested block loop, sort merge or nested loop index), if possible. (if
+    * an indexselect is also possible, the join operator takes precedence) The
+    * method returns null if no join is possible.
+    * 
     * @param current the specified plan
     * @return a join plan of the plan and this table
     */
@@ -65,17 +68,15 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      // TODO: Implement QueryPlanner check here
-      Plan p = makeSortMergeJoin(current, currsch);
-      //Plan p = makeIndexJoin(current, currsch);
+      Plan p = makeBestJoinMethod(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
    }
-   
+
    /**
-    * Constructs a product plan of the specified plan and
-    * this table.
+    * Constructs a product plan of the specified plan and this table.
+    * 
     * @param current the specified plan
     * @return a product plan of the specified plan and this table
     */
@@ -83,7 +84,7 @@ class TablePlanner {
       Plan p = addSelectPred(myplan);
       return new MultibufferProductPlan(tx, current, p);
    }
-   
+
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
          Constant val = mypred.equatesWithConstant(fldname);
@@ -95,39 +96,59 @@ class TablePlanner {
       }
       return null;
    }
-   
-   private Plan makeIndexJoin(Plan current, Schema currsch) {
+
+   private Plan makeBestJoinMethod(Plan current, Schema currsch) {
+      Optional<Plan> p1 = Optional.empty();
+      Optional<Plan> p2 = Optional.empty();
+      Optional<Plan> p3 = Optional.empty();
+
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
-            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            p1 = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
          }
       }
-      return null;
-   }
-   
-   private Plan makeSortMergeJoin(Plan current, Schema currsch) {
-      System.out.println("Running sort merge");
       for (String fldname : myschema.fields()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null) {
-            // TODO: Optimise which plan should come first
-            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            p2 = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
+         }
+         if (outerfield != null && currsch.hasField(outerfield)) {
+            // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
+            p3 = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname));
          }
       }
-      return null;
+
+      int p1Cost = p1.isPresent() ? p1.get().blocksAccessed() : Integer.MAX_VALUE;
+      int p2Cost = p2.isPresent() ? p2.get().blocksAccessed() : Integer.MAX_VALUE;
+      int p3Cost = p3.isPresent() ? p3.get().blocksAccessed() : Integer.MAX_VALUE;
+
+      Plan bestplan = p1.orElse(null);
+
+      if (p2Cost < p3Cost && p1Cost >= p2Cost) {
+         System.out.println("Running sort merge");
+         bestplan = p2.orElse(null);
+      } else if ((p1Cost < p2Cost && p1Cost >= p3Cost) || (p2Cost < p1Cost && p2Cost >= p3Cost)) {
+         System.out.println("Running nested loop join");
+         bestplan = p3.orElse(null);
+      } else {
+         System.out.println("Running index join");
+      }
+
+      if (bestplan == null) {
+         return null;
+      }
+
+      bestplan = addSelectPred(bestplan);
+      return addJoinPred(bestplan, currsch);
    }
 
    private Plan makeProductJoin(Plan current, Schema currsch) {
       Plan p = makeProductPlan(current);
       return addJoinPred(p, currsch);
    }
-   
+
    private Plan addSelectPred(Plan p) {
       Predicate selectpred = mypred.selectSubPred(myschema);
       if (selectpred != null)
@@ -135,7 +156,7 @@ class TablePlanner {
       else
          return p;
    }
-   
+
    private Plan addJoinPred(Plan p, Schema currsch) {
       Predicate joinpred = mypred.joinSubPred(currsch, myschema);
       if (joinpred != null)
