@@ -134,7 +134,7 @@ class TablePlanner {
       if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost) {
          System.out.println("Running sort merge");
          bestplan = mergeJoinPlan.orElse(null);
-      } else if ((nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost)) {
+      } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost) {
          System.out.println("Running nested loop join");
          bestplan = nestedLoopJoinPlan.orElse(null);
       } else {
