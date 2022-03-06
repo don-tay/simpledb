@@ -35,6 +35,7 @@ public class NestedLoopsJoinPlan implements Plan {
    public Scan open() {
       Scan s1 = p1.open();
       Scan s2 = p2.open();
+      // TODO: support joinpred field
       return new NestedLoopsJoinScan(s1, s2, fldname1, fldname2);
    }
 

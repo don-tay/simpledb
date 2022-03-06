@@ -68,7 +68,7 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeBestJoinMethod(current, currsch);
+      Plan p = makeBestJoinMethod(current, currsch, joinpred);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -97,7 +97,7 @@ class TablePlanner {
       return null;
    }
 
-   private Plan makeBestJoinMethod(Plan current, Schema currsch) {
+   private Plan makeBestJoinMethod(Plan current, Schema currsch, Predicate joinpred) {
       Optional<Plan> p1 = Optional.empty();
       Optional<Plan> p2 = Optional.empty();
       Optional<Plan> p3 = Optional.empty();
@@ -116,6 +116,7 @@ class TablePlanner {
          }
          if (outerfield != null && currsch.hasField(outerfield)) {
             // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
+            // TODO 2: handle inequality join
             p3 = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname));
          }
       }

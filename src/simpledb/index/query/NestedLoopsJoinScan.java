@@ -67,6 +67,7 @@ public class NestedLoopsJoinScan implements Scan {
          while (hasmore2) {
             Constant v2 = rhs.getVal(fldname2);
 
+            // TODO: generalize to support inequality join operator
             if (joinval.compareTo(v2) == 0) {
                return true;
             }
