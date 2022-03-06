@@ -66,9 +66,9 @@ public class Predicate {
       return true;
    }
 
-   public boolean hasInequalityOpr() {
+   public boolean hasNonEqualOpr() {
       for (Term t : terms) {
-         if (t.isInequalityOpr()) {
+         if (t.isNonEqualOpr()) {
             return true;
          }
       }

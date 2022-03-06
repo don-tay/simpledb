@@ -57,6 +57,13 @@ public class Term {
       return isTermSatisfied(lhsval, rhsval);
    }
 
+   /**
+    * Helper method evaluating lhs and rhs constants with the term's opr
+    * 
+    * @param lhsval lhs constant
+    * @param rhsval rhs constant
+    * @return
+    */
    private boolean isTermSatisfied(Constant lhsval, Constant rhsval) {
       String opval = op.getVal();
       switch (opval) {
@@ -78,8 +85,8 @@ public class Term {
       }
    }
 
-   public boolean isInequalityOpr() {
-      return op.isInequality();
+   public boolean isNonEqualOpr() {
+      return op.isNonEqualOpr();
    }
 
    /**

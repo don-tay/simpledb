@@ -104,8 +104,9 @@ class TablePlanner {
       // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
       Optional<Plan> nestedLoopJoinPlan = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred));
 
-      // attempt to create idx and sort-merge join if no inequality join
-      if (!joinpred.hasInequalityOpr()) {
+      // attempt to create idx and sort-merge join if no non-equal join condition eg.
+      // "<>", "<=", "<"
+      if (!joinpred.hasNonEqualOpr()) {
          for (String fldname : indexes.keySet()) {
             String outerfield = mypred.equatesWithField(fldname);
             if (outerfield != null && currsch.hasField(outerfield)) {
