@@ -3,9 +3,11 @@ package simpledb.query;
 import java.util.*;
 
 public class Operator {
-  private static final HashSet<String> VALID_OPERATORS_ARR = new HashSet<>(Arrays.asList("=", "<", ">", "<=", ">=", "<>", "!="));
+  private static final HashSet<String> VALID_OPERATORS = new HashSet<>(
+      Arrays.asList("=", "<", ">", "<=", ">=", "<>", "!="));
+  private static final HashSet<String> INEQUALITY_OPERATORS = new HashSet<>(Arrays.asList("<", ">", "<=", ">="));
   private String opVal;
-  
+
   public Operator(String opVal) {
     this.opVal = opVal;
   }
@@ -14,7 +16,11 @@ public class Operator {
     return this.opVal;
   }
 
+  public boolean isInequality() {
+    return INEQUALITY_OPERATORS.contains(opVal);
+  }
+
   public static boolean isValidOpString(String opStr) {
-    return VALID_OPERATORS_ARR.contains(opStr);
+    return VALID_OPERATORS.contains(opStr);
   }
 }

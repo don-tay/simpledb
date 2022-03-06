@@ -1,11 +1,13 @@
 package simpledb.index.query;
 
 import simpledb.query.Constant;
+import simpledb.query.Predicate;
 import simpledb.query.Scan;
 
 public class NestedLoopsJoinScan implements Scan {
    private Scan lhs, rhs;
    private String fldname1, fldname2;
+   private Predicate joinpred;
    private Constant joinval = null;
 
    /**
@@ -16,11 +18,12 @@ public class NestedLoopsJoinScan implements Scan {
     * @param fldname1 the LHS join field
     * @param fldname2 the RHS join field
     */
-   public NestedLoopsJoinScan(Scan lhs, Scan rhs, String fldname1, String fldname2) {
+   public NestedLoopsJoinScan(Scan lhs, Scan rhs, String fldname1, String fldname2, Predicate joinpred) {
       this.lhs = lhs;
       this.rhs = rhs;
       this.fldname1 = fldname1;
       this.fldname2 = fldname2;
+      this.joinpred = joinpred;
       beforeFirst();
    }
 
@@ -67,8 +70,7 @@ public class NestedLoopsJoinScan implements Scan {
          while (hasmore2) {
             Constant v2 = rhs.getVal(fldname2);
 
-            // TODO: generalize to support inequality join operator
-            if (joinval.compareTo(v2) == 0) {
+            if (joinpred.isSatisfied(lhs, rhs)) {
                return true;
             }
 

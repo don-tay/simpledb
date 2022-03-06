@@ -102,35 +102,43 @@ class TablePlanner {
       Optional<Plan> mergeJoinPlan = Optional.empty();
       Optional<Plan> nestedLoopJoinPlan = Optional.empty();
 
-      for (String fldname : indexes.keySet()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            IndexInfo ii = indexes.get(fldname);
-            idxJoinPlan = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
-         }
-      }
       for (String fldname : myschema.fields()) {
          String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null) {
-            mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
-         }
          if (outerfield != null && currsch.hasField(outerfield)) {
             // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
-            // TODO 2: handle inequality join
-            nestedLoopJoinPlan = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname));
+            nestedLoopJoinPlan = Optional
+                  .ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname, joinpred));
+         }
+      }
+
+      // attempt to create idx and sort-merge join if no inequality join
+      if (!joinpred.hasInequalityOpr()) {
+         for (String fldname : indexes.keySet()) {
+            String outerfield = mypred.equatesWithField(fldname);
+            if (outerfield != null && currsch.hasField(outerfield)) {
+               IndexInfo ii = indexes.get(fldname);
+               idxJoinPlan = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
+            }
+         }
+         for (String fldname : myschema.fields()) {
+            String outerfield = mypred.equatesWithField(fldname);
+            if (outerfield != null) {
+               mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
+            }
          }
       }
 
       int idxJoinPlanCost = idxJoinPlan.isPresent() ? idxJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
       int mergeJoinPlanCost = mergeJoinPlan.isPresent() ? mergeJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
-      int nestedLoopJoinPlanCost = nestedLoopJoinPlan.isPresent() ? nestedLoopJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
+      int nestedLoopJoinPlanCost = nestedLoopJoinPlan.isPresent() ? nestedLoopJoinPlan.get().blocksAccessed()
+            : Integer.MAX_VALUE;
 
       Plan bestplan = idxJoinPlan.orElse(null);
 
-      if (mergeJoinPlanCost < nestedLoopJoinPlanCost && idxJoinPlanCost >= mergeJoinPlanCost) {
+      if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost) {
          System.out.println("Running sort merge");
          bestplan = mergeJoinPlan.orElse(null);
-      } else if ((idxJoinPlanCost < mergeJoinPlanCost && idxJoinPlanCost >= nestedLoopJoinPlanCost) || (mergeJoinPlanCost < idxJoinPlanCost && mergeJoinPlanCost >= nestedLoopJoinPlanCost)) {
+      } else if ((nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost)) {
          System.out.println("Running nested loop join");
          bestplan = nestedLoopJoinPlan.orElse(null);
       } else {
