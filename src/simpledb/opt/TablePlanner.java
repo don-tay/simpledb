@@ -100,16 +100,9 @@ class TablePlanner {
    private Plan makeBestJoinMethod(Plan current, Schema currsch, Predicate joinpred) {
       Optional<Plan> idxJoinPlan = Optional.empty();
       Optional<Plan> mergeJoinPlan = Optional.empty();
-      Optional<Plan> nestedLoopJoinPlan = Optional.empty();
 
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
-            nestedLoopJoinPlan = Optional
-                  .ofNullable(new NestedLoopsJoinPlan(current, myplan, outerfield, fldname, joinpred));
-         }
-      }
+      // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
+      Optional<Plan> nestedLoopJoinPlan = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred));
 
       // attempt to create idx and sort-merge join if no inequality join
       if (!joinpred.hasInequalityOpr()) {
