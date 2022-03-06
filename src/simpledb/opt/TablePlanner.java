@@ -101,8 +101,10 @@ class TablePlanner {
       Optional<Plan> idxJoinPlan = Optional.empty();
       Optional<Plan> mergeJoinPlan = Optional.empty();
 
-      // TODO: optimize for smaller blocksAccessed as the outer page (ie. LHS)
-      Optional<Plan> nestedLoopJoinPlan = Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred));
+      // optimize for smaller blocksAccessed as the outer page (ie. LHS)
+      Optional<Plan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
+            ? Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred))
+            : Optional.ofNullable(new NestedLoopsJoinPlan(myplan, current, joinpred));
 
       // attempt to create idx and sort-merge join if no non-equal join condition eg.
       // "<>", "<=", "<"
