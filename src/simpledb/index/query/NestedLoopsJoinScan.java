@@ -1,26 +1,25 @@
 package simpledb.index.query;
 
 import simpledb.query.Constant;
+import simpledb.query.Predicate;
 import simpledb.query.Scan;
 
 public class NestedLoopsJoinScan implements Scan {
    private Scan lhs, rhs;
-   private String fldname1, fldname2;
-   private Constant joinval = null;
+   private Predicate joinpred;
+   private boolean hasLhsVal = false;
 
    /**
     * Creates an nested block loop scan for the specified LHS scan and RHS scan.
     * 
     * @param lhs      the LHS scan
     * @param rhs      the RHS scan
-    * @param fldname1 the LHS join field
-    * @param fldname2 the RHS join field
+    * @param joinpred the join predicate involved in the 2 scans
     */
-   public NestedLoopsJoinScan(Scan lhs, Scan rhs, String fldname1, String fldname2) {
+   public NestedLoopsJoinScan(Scan lhs, Scan rhs, Predicate joinpred) {
       this.lhs = lhs;
       this.rhs = rhs;
-      this.fldname1 = fldname1;
-      this.fldname2 = fldname2;
+      this.joinpred = joinpred;
       beforeFirst();
    }
 
@@ -55,26 +54,24 @@ public class NestedLoopsJoinScan implements Scan {
    public boolean next() {
       while (true) {
          boolean hasmore1 = true;
-         if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
+         if (!hasLhsVal) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
             hasmore1 = lhs.next();
          }
          if (!hasmore1) {
             return false;
          }
          boolean hasmore2 = rhs.next();
-         joinval = lhs.getVal(fldname1);
+         hasLhsVal = true;
 
          while (hasmore2) {
-            Constant v2 = rhs.getVal(fldname2);
-
-            if (joinval.compareTo(v2) == 0) {
+            if (joinpred.isSatisfied(lhs, rhs)) {
                return true;
             }
 
             hasmore2 = rhs.next();
          }
          // revert rhs to start if no more
-         joinval = null;
+         hasLhsVal = false;
          rhs.beforeFirst();
       }
    }
