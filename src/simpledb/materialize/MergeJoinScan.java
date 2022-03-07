@@ -63,7 +63,6 @@ public class MergeJoinScan implements Scan {
     * @see simpledb.query.Scan#next()
     */
    public boolean next() {
-      System.out.println(hasmore1);
       if (!hasmore1) {
          return false;
       }
