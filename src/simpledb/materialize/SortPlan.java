@@ -47,17 +47,18 @@ public class SortPlan implements Plan {
    }
 
    /**
-    * Return the number of blocks in the sorted table, which is the same as it
-    * would be in a materialized table. It does <i>not</i> include the one-time
-    * cost of materializing and sorting the records.
+    * Return the cost of sorting the table
     * 
     * @see simpledb.plan.Plan#blocksAccessed()
     */
-   public int blocksAccessed() {
-      // does not include the one-time cost of sorting
+    public int blocksAccessed() {
       Plan mp = new MaterializePlan(tx, p); // not opened; just for analysis
-      return mp.blocksAccessed();
+      int scanLength = mp.blocksAccessed();
+      int mergePasses = SortPlan.customLog(tx.availableBuffs() - 1, 
+         scanLength / tx.availableBuffs());
+      return 2 * scanLength * (1 + mergePasses);
    }
+
 
    /**
     * Return the number of records in the sorted table, which is the same as in the
@@ -152,5 +153,15 @@ public class SortPlan implements Plan {
       for (String fldname : sch.fields())
          dest.setVal(fldname, src.getVal(fldname));
       return src.next();
+   }
+   /**
+    * Returns the value of log_{base}^{argument}
+    * @param base base of the custom log 
+    * @param argument argument of the custom log   
+    */
+    public static int customLog(int base, int argument) {
+      double numerator = Math.log(argument);
+      double denominator = Math.log(base);
+      return (int)(numerator / denominator);
    }
 }
