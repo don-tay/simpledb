@@ -87,6 +87,11 @@ public class Parser {
 
    public QueryData query() {
       lex.eatKeyword("select");
+      if (lex.matchKeyword("distinct")) {
+         lex.eatKeyword("distinct");
+         // TODO: Create Clause Class to deal with presence of 'distinct'/Establish
+         // presence of 'distinct'
+      }
       List<String> fields = selectList();
       lex.eatKeyword("from");
       Collection<String> tables = tableList();

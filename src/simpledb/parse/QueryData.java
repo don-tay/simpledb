@@ -18,12 +18,15 @@ public class QueryData {
    /**
     * Saves the field and table list and predicate.
     */
+   // TODO: Take in clause
    public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<SortField> sortfields) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
       this.sortfields = sortfields;
    }
+
+   // TODO: Add in clause()
 
    /**
     * Returns the fields mentioned in the select clause.
@@ -62,6 +65,7 @@ public class QueryData {
       return sortfields;
    }
 
+   // TODO: Update to include for clause
    public String toString() {
       String result = "select ";
       for (String fldname : fields)
