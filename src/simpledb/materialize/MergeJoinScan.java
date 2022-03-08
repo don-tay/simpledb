@@ -11,7 +11,6 @@ public class MergeJoinScan implements Scan {
    private SortScan s2;
    private String fldname1, fldname2;
    private Constant joinval = null;
-   private boolean hasmore1;
    
    /**
     * Create a mergejoin scan for the two underlying sorted scans.
