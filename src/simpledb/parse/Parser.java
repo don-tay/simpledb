@@ -87,10 +87,10 @@ public class Parser {
 
    public QueryData query() {
       lex.eatKeyword("select");
+      Boolean isDistinct = true;
       if (lex.matchKeyword("distinct")) {
          lex.eatKeyword("distinct");
-         // TODO: Create Clause Class to deal with presence of 'distinct'/Establish
-         // presence of 'distinct'
+         isDistinct = false;
       }
       List<String> fields = selectList();
       lex.eatKeyword("from");
@@ -106,7 +106,7 @@ public class Parser {
          lex.eatKeyword("by");
          sortfields = sortList();
       }
-      return new QueryData(fields, tables, pred, sortfields);
+      return new QueryData(fields, tables, isDistinct, pred, sortfields);
    }
 
    private List<String> selectList() {

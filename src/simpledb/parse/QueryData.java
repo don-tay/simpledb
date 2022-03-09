@@ -12,21 +12,21 @@ import simpledb.query.*;
 public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
+   private Boolean isDistinct;
    private Predicate pred;
    private List<SortField> sortfields;
 
    /**
     * Saves the field and table list and predicate.
     */
-   // TODO: Take in clause
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<SortField> sortfields) {
+   public QueryData(List<String> fields, Collection<String> tables, Boolean isDistinct, Predicate pred,
+         List<SortField> sortfields) {
       this.fields = fields;
       this.tables = tables;
+      this.isDistinct = isDistinct;
       this.pred = pred;
       this.sortfields = sortfields;
    }
-
-   // TODO: Add in clause()
 
    /**
     * Returns the fields mentioned in the select clause.
@@ -44,6 +44,15 @@ public class QueryData {
     */
    public Collection<String> tables() {
       return tables;
+   }
+
+   /**
+    * Returns whether records in output table should be distinct.
+    * 
+    * @return records distinct boolean
+    */
+   public Boolean isDistinct() {
+      return isDistinct;
    }
 
    /**
@@ -65,9 +74,10 @@ public class QueryData {
       return sortfields;
    }
 
-   // TODO: Update to include for clause
    public String toString() {
       String result = "select ";
+      if (isDistinct)
+         result += "distinct ";
       for (String fldname : fields)
          result += fldname + ", ";
       result = result.substring(0, result.length() - 2); // remove final comma
