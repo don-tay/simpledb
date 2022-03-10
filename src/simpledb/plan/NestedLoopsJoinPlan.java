@@ -1,7 +1,6 @@
-package simpledb.index.planner;
+package simpledb.plan;
 
-import simpledb.index.query.NestedLoopsJoinScan;
-import simpledb.plan.Plan;
+import simpledb.query.NestedLoopsJoinScan;
 import simpledb.query.Predicate;
 import simpledb.query.Scan;
 import simpledb.record.Schema;

@@ -1,8 +1,4 @@
-package simpledb.index.query;
-
-import simpledb.query.Constant;
-import simpledb.query.Predicate;
-import simpledb.query.Scan;
+package simpledb.query;
 
 public class NestedLoopsJoinScan implements Scan {
    private Scan lhs, rhs;
