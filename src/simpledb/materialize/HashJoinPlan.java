@@ -1,9 +1,7 @@
-package simpledb.plan;
+package simpledb.materialize;
 
 import simpledb.tx.Transaction;
-import simpledb.materialize.MaterializePlan;
-import simpledb.materialize.MergeJoinScan;
-import simpledb.materialize.SortScan;
+import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.Plan;
 import simpledb.query.*;
 import simpledb.record.*;
@@ -20,6 +18,7 @@ public class HashJoinPlan implements Plan {
   private String fldname1, fldname2;
   private Schema sch = new Schema();
   private Transaction tx;
+  private int hashBucketCount;
 
   /**
    * Creates a hashjoin plan for the two specified queries. The RHS must be
@@ -37,6 +36,8 @@ public class HashJoinPlan implements Plan {
     this.fldname1 = fldname1;
     this.fldname2 = fldname2;
     this.tx = tx;
+    // hash into (B-1) buckets
+    this.hashBucketCount = tx.availableBuffs() - 1;
 
     sch.addAll(p1.schema());
     sch.addAll(p2.schema());
@@ -49,21 +50,20 @@ public class HashJoinPlan implements Plan {
    * @see simpledb.plan.Plan#open()
    */
   public Scan open() {
-    Scan s1 = p1.open();
-    // TODO: modify to a normal scan
-    SortScan s2 = (SortScan) p2.open();
-    return new MergeJoinScan(s1, s2, fldname1, fldname2);
-    // return new HashJoinScan(s1, s2, fldname1, fldname2);
+    List<TempTable> b1 = hashToBuckets(p1, fldname1);
+    List<TempTable> b2 = hashToBuckets(p2, fldname2);
+    return new HashJoinScan(tx, b1, b2, fldname1, fldname2);
   }
 
   /**
-   * Return the number of block acceses required to hashjoin the sorted tables.
-   * Since a hashjoin can be preformed with a single pass through each table, the
-   * method returns the sum of the block accesses of the materialized sorted
-   * tables. Includes the one-time cost of materializing and sorting the records.
-   * 
+   * Return the number of block acceses required to perform hashjoin on the
+   * tables. Since a hashjoin can be preformed with a single pass through each
+   * table, the method returns the sum of the block accesses of the materialized
+   * tables. Includes the one-time cost of materializing the records.
+   *
    * @see simpledb.plan.Plan#blocksAccessed()
    */
+  // TODO: add formula
   public int blocksAccessed() {
     int hashingCost = p1.blocksAccessed() + p2.blocksAccessed();
     Plan mp1 = new MaterializePlan(tx, p1);
@@ -108,5 +108,36 @@ public class HashJoinPlan implements Plan {
    */
   public Schema schema() {
     return sch;
+  }
+
+  private List<TempTable> hashToBuckets(Plan p, String joinfield) {
+    List<TempTable> tempTables = initTempTables(p);
+    List<String> fields = p.schema().fields();
+    Scan s = p.open();
+    if (!s.next()) {
+      return tempTables;
+    }
+
+    s.beforeFirst();
+    while (s.next()) {
+      Constant c = s.getVal(joinfield);
+      int idx = c.hashCode() % hashBucketCount;
+      UpdateScan tblToInsert = tempTables.get(idx).open();
+      tblToInsert.insert();
+      for (String fldname : fields) {
+        tblToInsert.setVal(fldname, s.getVal(fldname));
+      }
+      tblToInsert.close();
+    }
+    s.close();
+    return tempTables;
+  }
+
+  private List<TempTable> initTempTables(Plan p) {
+    List<TempTable> tempTables = new ArrayList<>();
+    for (int i = 0; i < hashBucketCount; ++i) {
+      tempTables.add(new TempTable(tx, p.schema()));
+    }
+    return tempTables;
   }
 }

@@ -7,6 +7,7 @@ import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.*;
+import simpledb.materialize.HashJoinPlan;
 import simpledb.materialize.MergeJoinPlan;
 import simpledb.index.planner.*;
 import simpledb.multibuffer.MultibufferProductPlan;
@@ -100,6 +101,7 @@ class TablePlanner {
    private Plan makeBestJoinMethod(Plan current, Schema currsch, Predicate joinpred) {
       Optional<Plan> idxJoinPlan = Optional.empty();
       Optional<Plan> mergeJoinPlan = Optional.empty();
+      Optional<Plan> hashJoinPlan = Optional.empty();
 
       // optimize for smaller blocksAccessed as the outer page (ie. LHS)
       Optional<Plan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
@@ -121,6 +123,11 @@ class TablePlanner {
             if (outerfield != null) {
                mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
             }
+            // create hashjoin plan only if table B cannot fit in memory
+            // otherwise, multibuffer product plan will suffice
+            if (outerfield != null && myplan.blocksAccessed() >= tx.availableBuffs()) {
+               hashJoinPlan = Optional.ofNullable(new HashJoinPlan(tx, current, myplan, outerfield, fldname));
+            }
          }
       }
 
@@ -128,20 +135,26 @@ class TablePlanner {
       int mergeJoinPlanCost = mergeJoinPlan.isPresent() ? mergeJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
       int nestedLoopJoinPlanCost = nestedLoopJoinPlan.isPresent() ? nestedLoopJoinPlan.get().blocksAccessed()
             : Integer.MAX_VALUE;
+      int hashJoinPlanCost = hashJoinPlan.isPresent() ? hashJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
 
       Plan bestplan = idxJoinPlan.orElse(null);
 
-      if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost) {
+      if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost
+            && mergeJoinPlanCost < hashJoinPlanCost) {
          System.out.println("Running sort merge");
          bestplan = mergeJoinPlan.orElse(null);
-      } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost) {
+      } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost
+            && nestedLoopJoinPlanCost < hashJoinPlanCost) {
          System.out.println("Running nested loop join");
          bestplan = nestedLoopJoinPlan.orElse(null);
-      } else {
+      } else if (hashJoinPlanCost < nestedLoopJoinPlanCost && hashJoinPlanCost < mergeJoinPlanCost
+            && hashJoinPlanCost < idxJoinPlanCost) {
+         System.out.println("Running hash join");
+         bestplan = hashJoinPlan.orElse(null);
+      } else if (bestplan != null) {
          System.out.println("Running index join");
-      }
-
-      if (bestplan == null) {
+      } else {
+         // return null when no bestplan
          return null;
       }
 
