@@ -56,8 +56,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       // Step 6: Remove duplicate records
       if (data.isDistinct()) {
-         // TODO: Figure out what DistinctPlan should take in
-         currentplan = new DistinctPlan(currentplan);
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
       }
 
       return currentplan;

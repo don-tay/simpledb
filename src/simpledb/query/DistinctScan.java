@@ -1,14 +1,23 @@
 package simpledb.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import simpledb.materialize.SortScan;
+
 /**
  * Does (optimized)sort-based approach to remove duplicate records
  */
 public class DistinctScan implements Scan {
-  private Scan s;
+  private SortScan s;
+  private List<String> fieldlist;
+  private List<Constant> previousRecord;
 
-  // TODO: modify parameters if more info is needed
-  public DistinctScan(Scan s) {
+  public DistinctScan(SortScan s, List<String> fieldlist) {
     this.s = s;
+    this.fieldlist = fieldlist;
+    this.previousRecord = new ArrayList<>();
+    beforeFirst();
   }
 
   /**
@@ -20,13 +29,40 @@ public class DistinctScan implements Scan {
   }
 
   /**
-   * Move the scan to the next record.
+   * Move to the next record. If the record has appeared before, move the scan
+   * until the record is unique. When the scan runs out of records, return false.
    * 
    * @return false if there is no next record
    */
   public boolean next() {
-    // TODO: Fill in appropriately
-    return s.next();
+    boolean hasmore = s.next();
+    while (hasmore) {
+      if (previousRecord.isEmpty()) {
+        for (String field : fieldlist) {
+          previousRecord.add(s.getVal(field));
+        }
+        return true;
+      } else {
+        boolean sameRecord = true;
+        for (int i = 0; i <= fieldlist.size(); i++) {
+          String field = fieldlist.get(i);
+          Constant value = s.getVal(field);
+          Constant prevRecVal = previousRecord.get(i);
+          if (value.compareTo(prevRecVal) != 0)
+            sameRecord = false;
+        }
+        if (sameRecord)
+          s.next();
+        else {
+          for (int i = 0; i <= fieldlist.size(); i++) {
+            String field = fieldlist.get(i);
+            previousRecord.set(i, s.getVal(field));
+          }
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -36,8 +72,10 @@ public class DistinctScan implements Scan {
    * @return the field's integer value in the current record
    */
   public int getInt(String fldname) {
-    // TODO: Modify if necessary
-    return s.getInt(fldname);
+    if (hasField(fldname))
+      return s.getInt(fldname);
+    else
+      throw new RuntimeException("field " + fldname + " not found.");
   }
 
   /**
@@ -47,10 +85,11 @@ public class DistinctScan implements Scan {
    * @return the field's string value in the current record
    */
   public String getString(String fldname) {
-    // TODO: Modify if necessary
-    return s.getString(fldname);
+    if (hasField(fldname))
+      return s.getString(fldname);
+    else
+      throw new RuntimeException("field " + fldname + " not found.");
   }
-
   /**
    * Return the value of the specified field in the current record. The value is
    * expressed as a Constant.
@@ -59,8 +98,10 @@ public class DistinctScan implements Scan {
    * @return the value of that field, expressed as a Constant.
    */
   public Constant getVal(String fldname) {
-    // TODO: Modify if necessary
-    return s.getVal(fldname);
+    if (hasField(fldname))
+      return s.getVal(fldname);
+    else
+      throw new RuntimeException("field " + fldname + " not found.");
   }
 
   /**
@@ -70,8 +111,7 @@ public class DistinctScan implements Scan {
    * @return true if the scan has that field
    */
   public boolean hasField(String fldname) {
-    // TODO: Modify if necessary
-    return s.hasField(fldname);
+    return fieldlist.contains(fldname);
   }
 
   /**

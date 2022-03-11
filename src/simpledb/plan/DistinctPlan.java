@@ -1,17 +1,30 @@
 package simpledb.plan;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import simpledb.materialize.SortPlan;
+import simpledb.materialize.SortScan;
+import simpledb.materialize.MaterializePlan;
 import simpledb.query.DistinctScan;
 import simpledb.query.Scan;
+import simpledb.query.SortField;
 import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 public class DistinctPlan implements Plan {
   Plan p;
+  private Schema schema = new Schema();
+  private Transaction tx;
 
-  // TODO: modify paramters if more info is needed from QueryPlanners
-  // (BasicQueryPlanner, HeuristicQueryPlanner)
-  public DistinctPlan(Plan p) {
-    this.p = p;
-
+  public DistinctPlan(Transaction tx, Plan p, List<String> fieldlist) {
+    List<SortField> sortfields = new ArrayList<>();
+    for (String field : fieldlist) {
+      sortfields.add(new SortField(field, "asc"));
+      this.schema.add(field, p.schema());
+    }
+    this.p = new SortPlan(tx, p, sortfields);
+    this.tx = tx;
   }
 
   /**
@@ -21,8 +34,8 @@ public class DistinctPlan implements Plan {
    * @return a scan
    */
   public Scan open() {
-    Scan s = p.open();
-    return new DistinctScan(s);
+    SortScan s = (SortScan) p.open();
+    return new DistinctScan(s, schema.fields());
   }
 
   /**
@@ -32,8 +45,9 @@ public class DistinctPlan implements Plan {
    * @return the estimated number of block accesses
    */
   public int blocksAccessed() {
-    // TODO: Fill in appropriately
-    return 0;
+    int sortingCost = p.blocksAccessed();
+    Plan mp = new MaterializePlan(tx, p);
+    return sortingCost + mp.blocksAccessed();
   }
 
   /**
@@ -42,8 +56,7 @@ public class DistinctPlan implements Plan {
    * @return the estimated number of output records
    */
   public int recordsOutput() {
-    // TODO: Fill in appropriately
-    return 0;
+    return p.recordsOutput();
   }
 
   /**
@@ -54,8 +67,7 @@ public class DistinctPlan implements Plan {
    * @return the estimated number of distinct field values in the output
    */
   public int distinctValues(String fldname) {
-    // TODO: Fill in appropriately
-    return 0;
+    return p.distinctValues(fldname);
   }
 
   /**

@@ -54,8 +54,7 @@ public class BasicQueryPlanner implements QueryPlanner {
 
       // Step 6: Remove duplicate records
       if (data.isDistinct()) {
-         // TODO: Figure out what DistinctPlan should take in
-         p = new DistinctPlan(p);
+         p = new DistinctPlan(tx, p, data.fields());
       }
 
       return p;
