@@ -67,22 +67,28 @@ public class HashJoinScan implements Scan {
     * record. When LHS runs out of records, return false.
     */
    public boolean next() {
-      // TODO: handle temptable traversal. currently, only 1st temptable from b1 and
-      // b2 is scanned
+      // TODO: bug in s1 traversal
       while (true) {
          boolean hasmore1 = true;
          if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
             hasmore1 = s1.next();
          }
-         if (!hasmore1) {
-            return false;
+         if (!hasmore1) { // if lhs has no more
+            close(); // close scan on current table
+            joinval = null;
+            if (++currIdx >= b1.size()) { // end scan if no more temptables
+               return false;
+            }
+            beforeFirst();
+            return next(); // recursive call to scan new temptable
          }
+         Constant v1 = s1.getVal(fldname1);
          boolean hasmore2 = s2.next();
-         joinval = s1.getVal(fldname1);
 
          while (hasmore2) {
             Constant v2 = s2.getVal(fldname2);
-            if (joinval.compareTo(v2) == 0) {
+            if (v1.compareTo(v2) == 0) {
+               joinval = s1.getVal(fldname1);
                return true;
             }
 

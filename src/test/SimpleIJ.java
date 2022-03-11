@@ -94,7 +94,8 @@ public class SimpleIJ {
 			tx.commit();
 			System.out.println(numRecordsUpdated + " records processed");
 		} catch (Exception e) {
-			System.out.println("Exception: " + e.toString());
+			e.printStackTrace();
+			System.err.println("Exception: " + e.toString());
 		}
 	}
 }
