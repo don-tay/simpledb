@@ -16,7 +16,7 @@ public class HashJoinScan implements Scan {
    private UpdateScan s1, s2;
    private String fldname1, fldname2;
    private int currIdx = 0;
-   private Constant joinval = null;
+   private Constant joinval;
 
    /**
     * Create a hashjoin scan for the two underlying hash buckets.
@@ -67,9 +67,9 @@ public class HashJoinScan implements Scan {
     * record. When LHS runs out of records, return false.
     */
    public boolean next() {
+      boolean hasmore1 = true;
       // TODO: bug in s1 traversal
       while (true) {
-         boolean hasmore1 = true;
          if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
             hasmore1 = s1.next();
          }
