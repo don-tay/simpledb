@@ -85,6 +85,7 @@ public class SimpleIJ {
 			tx.commit();
 		} catch (Exception e) {
 			System.out.println("SQL Exception: " + e.toString());
+			tx.rollback();
 		}
 	}
 
@@ -96,6 +97,7 @@ public class SimpleIJ {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Exception: " + e.toString());
+			tx.rollback();
 		}
 	}
 }
