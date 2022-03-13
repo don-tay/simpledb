@@ -115,21 +115,17 @@ class TablePlanner {
             String outerfield = mypred.equatesWithField(fldname);
             if (outerfield != null && currsch.hasField(outerfield)) {
                IndexInfo ii = indexes.get(fldname);
-               // idxJoinPlan = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii,
-               // outerfield));
+               idxJoinPlan = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
             }
          }
          for (String fldname : myschema.fields()) {
             String outerfield = mypred.equatesWithField(fldname);
             if (outerfield != null) {
-               // mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan,
-               // outerfield, fldname));
+               mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
             }
             // create hashjoin plan only if table B cannot fit in memory
             // otherwise, multibuffer product plan will suffice
-            if (outerfield != null
-            // && myplan.blocksAccessed() >= tx.availableBuffs()
-            ) {
+            if (outerfield != null && myplan.blocksAccessed() >= tx.availableBuffs()) {
                hashJoinPlan = Optional.ofNullable(new HashJoinPlan(tx, current, myplan, outerfield, fldname));
             }
          }

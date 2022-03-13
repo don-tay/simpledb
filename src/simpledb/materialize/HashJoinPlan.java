@@ -117,12 +117,12 @@ public class HashJoinPlan implements Plan {
     List<TempTable> tempTables = initTempTables(p);
     List<String> fields = p.schema().fields();
     Scan s = p.open();
-    if (!s.next()) {
+    boolean hasmore = s.next();
+    if (!hasmore) {
       return tempTables;
     }
 
-    s.beforeFirst();
-    while (s.next()) {
+    while (hasmore) {
       Constant c = s.getVal(joinfield);
       int idx = c.hashCode() % hashBucketCount;
       UpdateScan tblToInsert = tempTables.get(idx).open();
@@ -134,6 +134,7 @@ public class HashJoinPlan implements Plan {
       }
       System.out.println();
       tblToInsert.close();
+      hasmore = s.next();
     }
     s.close();
     return tempTables;
