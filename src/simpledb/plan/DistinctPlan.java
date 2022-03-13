@@ -12,11 +12,23 @@ import simpledb.query.SortField;
 import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 
+/**
+ * The Plan class for corresponding to the <i>distinct</i> relational algebra
+ * operator. Duplicates removed.
+ */
 public class DistinctPlan implements Plan {
   Plan p;
   private Schema schema = new Schema();
   private Transaction tx;
 
+  /**
+   * Creates a new distinct project node in the query tree, having the specified
+   * subquery and field list.
+   * 
+   * @param tx        the calling transaction
+   * @param p         the subquery
+   * @param fieldlist the list of fields
+   */
   public DistinctPlan(Transaction tx, Plan p, List<String> fieldlist) {
     List<SortField> sortfields = new ArrayList<>();
     for (String field : fieldlist) {
@@ -28,10 +40,9 @@ public class DistinctPlan implements Plan {
   }
 
   /**
-   * Opens a scan corresponding to this plan. The scan will be positioned before
-   * its first record.
-   * 
-   * @return a scan
+   * The method sorts the scan and returns a scan of the sorted table scan.
+   *
+   * @see simpledb.plan.Plan#open()
    */
   public Scan open() {
     SortScan s = (SortScan) p.open();
@@ -39,10 +50,10 @@ public class DistinctPlan implements Plan {
   }
 
   /**
-   * Returns an estimate of the number of block accesses that will occur when the
-   * scan is read to completion.
+   * Estimates the number of block accesses in the distinct projection, which is
+   * the same as in the underlying query.
    * 
-   * @return the estimated number of block accesses
+   * @see simpledb.plan.Plan#blocksAccessed()
    */
   public int blocksAccessed() {
     int sortingCost = p.blocksAccessed();
@@ -51,29 +62,29 @@ public class DistinctPlan implements Plan {
   }
 
   /**
-   * Returns an estimate of the number of records in the query's output table.
+   * Estimates the number of output records in the distinct projection, which is
+   * the same as in the underlying query.
    * 
-   * @return the estimated number of output records
+   * @see simpledb.plan.Plan#recordsOutput()
    */
   public int recordsOutput() {
     return p.recordsOutput();
   }
 
   /**
-   * Returns an estimate of the number of distinct values for the specified field
-   * in the query's output table.
+   * Estimates the number of distinct field values in the distinct projection,
+   * which is the same as in the underlying query.
    * 
-   * @param fldname the name of a field
-   * @return the estimated number of distinct field values in the output
+   * @see simpledb.plan.Plan#distinctValues(java.lang.String)
    */
   public int distinctValues(String fldname) {
     return p.distinctValues(fldname);
   }
 
   /**
-   * Returns the schema of the query.
+   * Returns the schema of the projection, which is taken from the field list.
    * 
-   * @return the query's schema
+   * @see simpledb.plan.Plan#schema()
    */
   public Schema schema() {
     return p.schema();

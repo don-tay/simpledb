@@ -6,7 +6,8 @@ import java.util.List;
 import simpledb.materialize.SortScan;
 
 /**
- * Does (optimized)sort-based approach to remove duplicate records
+ * The Scan class for the <i>project</i> operator which removes duplicate
+ * records.
  */
 public class DistinctScan implements Scan {
   private SortScan s;
