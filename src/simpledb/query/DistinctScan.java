@@ -44,23 +44,19 @@ public class DistinctScan implements Scan {
         }
         return true;
       } else {
-        boolean sameRecord = true;
         for (int i = 0; i < fieldlist.size(); i++) {
           String field = fieldlist.get(i);
           Constant value = s.getVal(field);
           Constant prevRecVal = previousRecord.get(i);
-          if (value.compareTo(prevRecVal) != 0)
-            sameRecord = false;
-        }
-        if (sameRecord)
-          hasmore = s.next();
-        else {
-          for (int i = 0; i < fieldlist.size(); i++) {
-            String field = fieldlist.get(i);
-            previousRecord.set(i, s.getVal(field));
+          if (value.compareTo(prevRecVal) != 0) {
+            for (int j = 0; j < fieldlist.size(); j++) {
+              String field2 = fieldlist.get(j);
+              previousRecord.set(i, s.getVal(field2));
+            }
+            return true;
           }
-          return true;
         }
+        hasmore = s.next();
       }
     }
     return false;
