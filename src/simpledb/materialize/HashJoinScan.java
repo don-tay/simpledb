@@ -16,7 +16,7 @@ public class HashJoinScan implements Scan {
    private UpdateScan s1, s2;
    private String fldname1, fldname2;
    private int currIdx = 0;
-   private Constant joinval;
+   private boolean hasJoinVal = false;
 
    /**
     * Create a hashjoin scan for the two underlying hash buckets.
@@ -69,11 +69,11 @@ public class HashJoinScan implements Scan {
    public boolean next() {
       boolean hasmore1 = true;
       while (true) {
-         if (joinval == null) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
+         if (!hasJoinVal) { // move lhs pointer when: 1. new scan 2. finished scanning rhs
             hasmore1 = s1.next();
          }
          if (!hasmore1) { // if lhs has no more
-            joinval = null;
+            hasJoinVal = false;
             if (++currIdx >= b1.size()) { // end scan if no more temptables
                return false;
             }
@@ -87,14 +87,14 @@ public class HashJoinScan implements Scan {
          while (hasmore2) {
             Constant v2 = s2.getVal(fldname2);
             if (v1.compareTo(v2) == 0) {
-               joinval = s1.getVal(fldname1);
+               hasJoinVal = true;
                return true;
             }
 
             hasmore2 = s2.next();
          }
          // revert rhs to start if no more
-         joinval = null;
+         hasJoinVal = false;
          s2.beforeFirst();
       }
    }
