@@ -38,7 +38,6 @@ public class HashJoinPlan implements Plan {
     this.tx = tx;
     // hash into (B-1) buckets
     this.hashBucketCount = tx.availableBuffs() - 1;
-    System.out.println("Avail hash buckets: " + hashBucketCount);
 
     sch.addAll(p1.schema());
     sch.addAll(p2.schema());
@@ -51,9 +50,7 @@ public class HashJoinPlan implements Plan {
    * @see simpledb.plan.Plan#open()
    */
   public Scan open() {
-    System.out.println("Hashing 1st table...");
     List<TempTable> b1 = hashToBuckets(p1, fldname1);
-    System.out.println("Hashing 2nd table...");
     List<TempTable> b2 = hashToBuckets(p2, fldname2);
     return new HashJoinScan(tx, b1, b2, fldname1, fldname2);
   }
@@ -129,12 +126,9 @@ public class HashJoinPlan implements Plan {
       int idx = c.hashCode() % hashBucketCount;
       UpdateScan tblToInsert = tempTables.get(idx).open();
       tblToInsert.insert();
-      System.out.print("Inserted into table " + idx + ": ");
       for (String fldname : fields) {
-        System.out.print(s.getVal(fldname) + " ");
         tblToInsert.setVal(fldname, s.getVal(fldname));
       }
-      System.out.println();
       tblToInsert.close();
       hasmore = s.next();
     }
