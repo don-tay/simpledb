@@ -45,7 +45,7 @@ public class DistinctScan implements Scan {
         return true;
       } else {
         boolean sameRecord = true;
-        for (int i = 0; i <= fieldlist.size(); i++) {
+        for (int i = 0; i < fieldlist.size(); i++) {
           String field = fieldlist.get(i);
           Constant value = s.getVal(field);
           Constant prevRecVal = previousRecord.get(i);
@@ -53,9 +53,9 @@ public class DistinctScan implements Scan {
             sameRecord = false;
         }
         if (sameRecord)
-          s.next();
+          hasmore = s.next();
         else {
-          for (int i = 0; i <= fieldlist.size(); i++) {
+          for (int i = 0; i < fieldlist.size(); i++) {
             String field = fieldlist.get(i);
             previousRecord.set(i, s.getVal(field));
           }
