@@ -73,7 +73,7 @@ public class HashJoinPlan implements Plan {
     Plan mp2 = new MaterializePlan(tx, p2);
     int hashingCost = mp1.blocksAccessed() + mp2.blocksAccessed();
     // ? Review formula
-    return hashingCost + p1.blocksAccessed() + (hashBucketCount * p2.blocksAccessed());
+    return hashingCost + p1.blocksAccessed() + p2.blocksAccessed();
   }
 
   /**
