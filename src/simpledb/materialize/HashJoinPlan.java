@@ -62,16 +62,18 @@ public class HashJoinPlan implements Plan {
    * Return the number of block acceses required to perform hashjoin on the
    * tables. Since a hashjoin can be preformed with a single pass through each
    * table, the method returns the sum of the block accesses of the materialized
-   * tables. Includes the one-time cost of materializing the records.
-   *
+   * tables. Page nested loop is then used to probe between the respective
+   * partitions. Hence, the cost is the sum of hashing, materializing and
+   * page-nested loop based probing (assuming partitions are evenly distributed.)
+   * 
    * @see simpledb.plan.Plan#blocksAccessed()
    */
-  // TODO: add formula
   public int blocksAccessed() {
-    int hashingCost = p1.blocksAccessed() + p2.blocksAccessed();
     Plan mp1 = new MaterializePlan(tx, p1);
     Plan mp2 = new MaterializePlan(tx, p2);
-    return hashingCost + mp1.blocksAccessed() + mp2.blocksAccessed();
+    int hashingCost = mp1.blocksAccessed() + mp2.blocksAccessed();
+    // ? Review formula
+    return hashingCost + p1.blocksAccessed() + (hashBucketCount * p2.blocksAccessed());
   }
 
   /**
