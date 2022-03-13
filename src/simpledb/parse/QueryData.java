@@ -15,17 +15,19 @@ public class QueryData {
    private Boolean isDistinct;
    private Predicate pred;
    private List<SortField> sortfields;
+   private List<String> groupbyfields;
 
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Boolean isDistinct, Predicate pred,
-         List<SortField> sortfields) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred,
+      List<SortField> sortfields, List<String> groupbyfields) {
       this.fields = fields;
       this.tables = tables;
       this.isDistinct = isDistinct;
       this.pred = pred;
       this.sortfields = sortfields;
+      this.groupbyfields = groupbyfields;
    }
 
    /**
@@ -74,6 +76,15 @@ public class QueryData {
       return sortfields;
    }
 
+      /**
+    * Returns the Group By fields mentioned in the Group By clause.
+    * 
+    * @return a list of field names
+    */
+    public List<String> groupbyfields() {
+      return groupbyfields;
+   }
+
    public String toString() {
       String result = "select ";
       if (isDistinct)
@@ -88,6 +99,13 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
+      if (!groupbyfields.isEmpty()) {
+         result += " group by ";
+         for (String groupbyfield : groupbyfields) {
+            result += groupbyfield.toString() + ", ";
+         }
+         result = result.substring(0, result.length() - 2); // remove final comma
+      }
       if (!sortfields.isEmpty()) {
          result += " order by ";
          for (SortField sortfield : sortfields) {

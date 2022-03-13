@@ -97,16 +97,23 @@ public class Parser {
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
       List<SortField> sortfields = new ArrayList<>();
+      List<String> groupbyfields = new ArrayList<>();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
+      }
+      if (lex.matchKeyword("group")) {
+         lex.eatKeyword("group");
+         lex.eatKeyword("by");
+         groupbyfields = selectList();
+         // TODO: Add error handling for missing by
       }
       if (lex.matchKeyword("order")) {
          lex.eatKeyword("order");
          lex.eatKeyword("by");
          sortfields = sortList();
       }
-      return new QueryData(fields, tables, isDistinct, pred, sortfields);
+      return new QueryData(fields, tables, pred, sortfields, groupbyfields);
    }
 
    private List<String> selectList() {
