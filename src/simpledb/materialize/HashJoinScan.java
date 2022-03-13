@@ -3,7 +3,6 @@ package simpledb.materialize;
 import java.util.List;
 
 import simpledb.query.*;
-import simpledb.tx.Transaction;
 
 /**
  * The Scan class for the <i>hashjoin</i> operator.
@@ -11,7 +10,6 @@ import simpledb.tx.Transaction;
  * @author Edward Sciore
  */
 public class HashJoinScan implements Scan {
-   private Transaction tx;
    private List<TempTable> b1, b2;
    private UpdateScan s1, s2;
    private String fldname1, fldname2;
@@ -25,10 +23,8 @@ public class HashJoinScan implements Scan {
     * @param b2       the RHS hashed buckets
     * @param fldname1 the LHS join field
     * @param fldname2 the RHS join field
-    * @param tx       the current transaction
     */
-   public HashJoinScan(Transaction tx, List<TempTable> b1, List<TempTable> b2, String fldname1, String fldname2) {
-      this.tx = tx;
+   public HashJoinScan(List<TempTable> b1, List<TempTable> b2, String fldname1, String fldname2) {
       this.b1 = b1;
       this.b2 = b2;
       this.fldname1 = fldname1;

@@ -1,7 +1,6 @@
 package simpledb.materialize;
 
 import simpledb.tx.Transaction;
-import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.Plan;
 import simpledb.query.*;
 import simpledb.record.*;
@@ -52,7 +51,7 @@ public class HashJoinPlan implements Plan {
   public Scan open() {
     List<TempTable> b1 = hashToBuckets(p1, fldname1);
     List<TempTable> b2 = hashToBuckets(p2, fldname2);
-    return new HashJoinScan(tx, b1, b2, fldname1, fldname2);
+    return new HashJoinScan(b1, b2, fldname1, fldname2);
   }
 
   /**
