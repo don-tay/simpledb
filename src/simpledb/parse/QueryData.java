@@ -16,15 +16,15 @@ public class QueryData {
    private Boolean isDistinct;
    private Predicate pred;
    private List<SortField> sortfields;
-   private Optional<List<String>> groupbyfields;
-   private Optional<List<AggregationFn>> aggFuncs;
+   private List<String> groupbyfields;
+   private List<AggregationFn> aggFuncs;
 
    /**
     * Saves the field and table list and predicate.
     */
    public QueryData(List<String> fields, Collection<String> tables, Boolean isDistinct,
-      Predicate pred, List<SortField> sortfields, Optional<List<String>> groupbyfields,
-      Optional<List<AggregationFn>> aggFuncs) {
+      Predicate pred, List<SortField> sortfields, List<String> groupbyfields,
+      List<AggregationFn> aggFuncs) {
       this.fields = fields;
       this.tables = tables;
       this.isDistinct = isDistinct;
@@ -85,16 +85,16 @@ public class QueryData {
     * 
     * @return a list of field names
     */
-    public Optional<List<String>> groupbyfields() {
+    public List<String> groupbyfields() {
       return groupbyfields;
    }
 
    /**
-    * Returns the Group By fields mentioned in the Group By clause.
+    * Returns the Agg fields mentioned in the Select clause.
     * 
     * @return a list of field names
     */
-    public Optional<List<AggregationFn>> aggregateFuncs() {
+    public List<AggregationFn> aggregateFuncs() {
       return aggFuncs;
    }
 
@@ -112,9 +112,9 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
-      if (groupbyfields.isPresent()) {
+      if (!groupbyfields.isEmpty()) {
          result += " group by ";
-         for (String groupbyfield : groupbyfields.get()) {
+         for (String groupbyfield : groupbyfields) {
             result += groupbyfield.toString() + ", ";
          }
          result = result.substring(0, result.length() - 2); // remove final comma

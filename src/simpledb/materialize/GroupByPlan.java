@@ -13,8 +13,8 @@ import simpledb.query.*;
  */
 public class GroupByPlan implements Plan {
    private Plan p;
-   private Optional<List<String>> groupfields;
-   private Optional<List<AggregationFn>> aggfns;
+   private List<String> groupfields;
+   private List<AggregationFn> aggfns;
    private Schema sch = new Schema();
 
    /**
@@ -27,27 +27,23 @@ public class GroupByPlan implements Plan {
     * @param aggfns      the aggregation functions
     * @param tx          the calling transaction
     */
-   public GroupByPlan(Transaction tx, Plan p, Optional<List<String>> groupfields,
-      Optional<List<AggregationFn>> aggfns) {
-         this.p = p;
-         if (groupfields.isPresent()) {
-            // If no grouping, save the cost of sorting
-            List<SortField> sortfields = new ArrayList<>();
-            for (String field : groupfields.get()) {
-               sortfields.add(new SortField(field, "asc"));
-            }
-            this.p = new SortPlan(tx, p, sortfields);
+   public GroupByPlan(Transaction tx, Plan p, List<String> groupfields,
+      List<AggregationFn> aggfns) {
+      this.p = p;
+      if (!groupfields.isEmpty()) {
+         // If no grouping, save the cost of sorting
+         List<SortField> sortfields = new ArrayList<>();
+         for (String field : groupfields) {
+            sortfields.add(new SortField(field, "asc"));
          }
+         this.p = new SortPlan(tx, p, sortfields);
+      }
       this.groupfields = groupfields;
       this.aggfns = aggfns;
-      if (groupfields.isPresent()) {
-         for (String fldname : groupfields.get())
+      for (String fldname : groupfields)
          sch.add(fldname, p.schema());
-      }
-      if (aggfns.isPresent()) {
-         for (AggregationFn fn : aggfns.get())
-            sch.addIntField(fn.fieldName());
-      }
+      for (AggregationFn fn : aggfns)
+         sch.addIntField(fn.fieldName());
    }
 
    /**
@@ -80,10 +76,8 @@ public class GroupByPlan implements Plan {
     */
    public int recordsOutput() {
       int numgroups = 1;
-      if (groupfields.isPresent()) {
-         for (String fldname : groupfields.get())
-            numgroups *= p.distinctValues(fldname);
-      }
+      for (String fldname : groupfields)
+         numgroups *= p.distinctValues(fldname);
       // TODO: Update records output for aggregation only fields 
       return numgroups;
    }

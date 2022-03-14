@@ -97,17 +97,14 @@ public class Parser {
       }
       // Parse fields and agg funcs
       List<String> fields = new ArrayList<>();
-      Optional<List<AggregationFn>> aggFuncs = Optional.empty();
+      List<AggregationFn> aggFuncs = new ArrayList<>();
       while (!lex.matchKeyword("from")) {
          if (lex.matchAggType()) {
-            if (aggFuncs.isEmpty()) {
-               aggFuncs = Optional.of(new ArrayList<AggregationFn>());
-            }
             String currFunction = lex.eatAggType();
             lex.eatDelim('(');
             String currField = field();
             AggregationFn temp = genAggregateFunction(currField, currFunction);
-            aggFuncs.get().add(temp);
+            aggFuncs.add(temp);
             fields.add(temp.fieldName());
             lex.eatDelim(')');
          } else {
@@ -122,7 +119,7 @@ public class Parser {
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
       List<SortField> sortfields = new ArrayList<>();
-      Optional<List<String>> groupbyfields = Optional.empty();
+      List<String> groupbyfields = new ArrayList<>();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
@@ -130,7 +127,7 @@ public class Parser {
       if (lex.matchKeyword("group")) {
          lex.eatKeyword("group");
          lex.eatKeyword("by");
-         groupbyfields = Optional.of(selectList());
+         groupbyfields = selectList();
       }
       if (lex.matchKeyword("order")) {
          lex.eatKeyword("order");
@@ -182,7 +179,7 @@ public class Parser {
       switch (function) {
          case "count":
             return new CountFn(field);
-         case "min":
+         case "max":
             return new MaxFn(field);
          default:
             return null;

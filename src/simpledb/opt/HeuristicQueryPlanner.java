@@ -54,7 +54,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
 
       // Step 5: Group By And/Or aggregate
-      if (data.groupbyfields().isPresent() || data.aggregateFuncs().isPresent()) {
+      if (!data.groupbyfields().isEmpty() || !data.aggregateFuncs().isEmpty()) {
          currentplan = new GroupByPlan(tx, currentplan, data.groupbyfields(), data.aggregateFuncs());
       }
    
