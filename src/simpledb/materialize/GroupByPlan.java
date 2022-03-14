@@ -29,6 +29,7 @@ public class GroupByPlan implements Plan {
     */
    public GroupByPlan(Transaction tx, Plan p, Optional<List<String>> groupfields,
       Optional<List<AggregationFn>> aggfns) {
+         this.p = p;
          if (groupfields.isPresent()) {
             // If no grouping, save the cost of sorting
             List<SortField> sortfields = new ArrayList<>();

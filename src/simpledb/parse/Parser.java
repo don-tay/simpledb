@@ -105,8 +105,10 @@ public class Parser {
             }
             String currFunction = lex.eatAggType();
             lex.eatDelim('(');
-            String currField = field(); 
-            aggFuncs.get().add(genAggregateFunction(currField, currFunction));
+            String currField = field();
+            AggregationFn temp = genAggregateFunction(currField, currFunction);
+            aggFuncs.get().add(temp);
+            fields.add(temp.fieldName());
             lex.eatDelim(')');
          } else {
             fields.add(field());

@@ -105,13 +105,6 @@ public class QueryData {
       for (String fldname : fields)
          result += fldname + ", ";
       result = result.substring(0, result.length() - 2); // remove final comma
-      if (aggFuncs.isPresent()) {
-         result += ", ";
-         for (AggregationFn func: aggFuncs.get()) {
-            result += func.fieldName() + ", ";
-         }
-         result = result.substring(0, result.length() - 2); // remove final comma
-      }
       result += " from ";
       for (String tblname : tables)
          result += tblname + ", ";
