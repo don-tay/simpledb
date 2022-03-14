@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
 import simpledb.query.*;
 
 /**
@@ -15,19 +16,22 @@ public class QueryData {
    private Boolean isDistinct;
    private Predicate pred;
    private List<SortField> sortfields;
-   private List<String> groupbyfields;
+   private Optional<List<String>> groupbyfields;
+   private Optional<List<AggregationFn>> aggFuncs;
 
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred,
-      List<SortField> sortfields, List<String> groupbyfields) {
+   public QueryData(List<String> fields, Collection<String> tables, Boolean isDistinct,
+      Predicate pred, List<SortField> sortfields, Optional<List<String>> groupbyfields,
+      Optional<List<AggregationFn>> aggFuncs) {
       this.fields = fields;
       this.tables = tables;
       this.isDistinct = isDistinct;
       this.pred = pred;
       this.sortfields = sortfields;
       this.groupbyfields = groupbyfields;
+      this.aggFuncs = aggFuncs;
    }
 
    /**
@@ -81,8 +85,17 @@ public class QueryData {
     * 
     * @return a list of field names
     */
-    public List<String> groupbyfields() {
+    public Optional<List<String>> groupbyfields() {
       return groupbyfields;
+   }
+
+   /**
+    * Returns the Group By fields mentioned in the Group By clause.
+    * 
+    * @return a list of field names
+    */
+    public Optional<List<AggregationFn>> aggregateFuncs() {
+      return aggFuncs;
    }
 
    public String toString() {
@@ -92,6 +105,13 @@ public class QueryData {
       for (String fldname : fields)
          result += fldname + ", ";
       result = result.substring(0, result.length() - 2); // remove final comma
+      if (aggFuncs.isPresent()) {
+         result += ", ";
+         for (AggregationFn func: aggFuncs.get()) {
+            result += func.fieldName() + ", ";
+         }
+         result = result.substring(0, result.length() - 2); // remove final comma
+      }
       result += " from ";
       for (String tblname : tables)
          result += tblname + ", ";
@@ -99,9 +119,9 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
-      if (!groupbyfields.isEmpty()) {
+      if (groupbyfields.isPresent()) {
          result += " group by ";
-         for (String groupbyfield : groupbyfields) {
+         for (String groupbyfield : groupbyfields.get()) {
             result += groupbyfield.toString() + ", ";
          }
          result = result.substring(0, result.length() - 2); // remove final comma
