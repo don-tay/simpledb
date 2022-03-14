@@ -10,9 +10,9 @@ import simpledb.query.*;
  */
 public class GroupByScan implements Scan {
    private Scan s;
-   private List<String> groupfields;
-   private List<AggregationFn> aggfns;
-   private GroupValue groupval;
+   private Optional<List<String>> groupfields;
+   private Optional<List<AggregationFn>> aggfns;
+   private Optional<GroupValue> groupval;
    private boolean moregroups;
    
    /**
@@ -21,7 +21,8 @@ public class GroupByScan implements Scan {
     * @param groupfields the group fields
     * @param aggfns the aggregation functions
     */
-   public GroupByScan(Scan s, List<String> groupfields, List<AggregationFn> aggfns) {
+   public GroupByScan(Scan s, Optional<List<String>> groupfields,
+      Optional<List<AggregationFn>> aggfns) {
       this.s = s;
       this.groupfields = groupfields;
       this.aggfns = aggfns;
@@ -55,15 +56,25 @@ public class GroupByScan implements Scan {
    public boolean next() {
       if (!moregroups)
          return false;
-      for (AggregationFn fn : aggfns)
-         fn.processFirst(s);
-      groupval = new GroupValue(s, groupfields);
+      if (aggfns.isPresent()) {
+         for (AggregationFn fn : aggfns.get())
+            fn.processFirst(s);
+      }
+
+      groupval = groupfields.isPresent()
+      ? Optional.of(new GroupValue(s, groupfields.get()))
+      : Optional.empty();
+
       while(moregroups = s.next()) {
-         GroupValue gv = new GroupValue(s, groupfields);
+         Optional<GroupValue> gv = groupfields.isPresent()
+         ? Optional.of(new GroupValue(s, groupfields.get()))
+         : Optional.empty();
          if (!groupval.equals(gv))
             break;
-         for (AggregationFn fn : aggfns)
-            fn.processNext(s);
+         if (aggfns.isPresent()) {
+            for (AggregationFn fn : aggfns.get())
+               fn.processNext(s);
+         }
       }
       return true;
    }
@@ -85,9 +96,9 @@ public class GroupByScan implements Scan {
     * @see simpledb.query.Scan#getVal(java.lang.String)
     */
    public Constant getVal(String fldname) {
-      if (groupfields.contains(fldname))
-         return groupval.getVal(fldname);
-      for (AggregationFn fn : aggfns)
+      if (groupfields.isPresent() && groupfields.get().contains(fldname))
+         return groupval.get().getVal(fldname);
+      for (AggregationFn fn : aggfns.get())
          if (fn.fieldName().equals(fldname))
          return fn.value();
       throw new RuntimeException("field " + fldname + " not found.");
@@ -122,9 +133,9 @@ public class GroupByScan implements Scan {
     * @see simpledb.query.Scan#hasField(java.lang.String)
     */
    public boolean hasField(String fldname) {
-      if (groupfields.contains(fldname))
+      if (groupfields.isPresent() && groupfields.get().contains(fldname))
          return true;
-      for (AggregationFn fn : aggfns)
+      for (AggregationFn fn : aggfns.get())
          if (fn.fieldName().equals(fldname))
          return true;
       return false;
