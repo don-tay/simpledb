@@ -83,8 +83,4 @@ public class SelectPlan implements Plan {
    public Schema schema() {
       return p.schema();
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running Selection of Plan (cost=" + blocksAccessed() + ")");
-   }
 }

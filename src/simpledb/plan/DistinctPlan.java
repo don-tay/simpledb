@@ -90,7 +90,4 @@ public class DistinctPlan implements Plan {
     return p.schema();
   }
 
-  public void printExecutionPlan() {
-    System.out.println("Running duplicates removal (cost=" + blocksAccessed() + ")");
-  }
 }

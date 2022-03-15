@@ -76,9 +76,4 @@ public class IndexSelectPlan implements Plan {
    public Schema schema() {
       return p.schema(); 
    }
-
-   public void printExecutionPlan() {
-      System.out.printf("Running Index Scan using " + ii.indexedField() + "(cost=" + blocksAccessed() + " width="
-            + schema().fields().size() + ")\n");
-   }
 }

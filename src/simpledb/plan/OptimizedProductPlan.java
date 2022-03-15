@@ -38,8 +38,4 @@ public class OptimizedProductPlan implements Plan {
    public Schema schema() {
       return bestplan.schema();
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running optimized cross product (cost=" + blocksAccessed() + ")");
-   }
 }

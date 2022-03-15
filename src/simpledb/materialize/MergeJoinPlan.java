@@ -108,8 +108,4 @@ public class MergeJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running sort merge join (cost=" + blocksAccessed() + ")");
-   }
 }

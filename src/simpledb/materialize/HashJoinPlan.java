@@ -144,8 +144,4 @@ public class HashJoinPlan implements Plan {
     }
     return tempTables;
   }
-
-  public void printExecutionPlan() {
-    System.out.println("Running hash join (cost=" + blocksAccessed() + ")");
-  }
 }

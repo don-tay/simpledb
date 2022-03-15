@@ -106,8 +106,4 @@ public class GroupByPlan implements Plan {
    public Schema schema() {
       return sch;
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running Grouping (cost=" + blocksAccessed() + ")");
-   }
 }

@@ -112,8 +112,4 @@ public class MultibufferProductPlan implements Plan {
       dest.close();
       return t;
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running multibuffer cross product (cost=" + blocksAccessed() + ")");
-   }
 }

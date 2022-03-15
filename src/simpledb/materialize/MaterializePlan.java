@@ -84,8 +84,4 @@ public class MaterializePlan implements Plan {
    public Schema schema() {
       return srcplan.schema();
    }
-
-   public void printExecutionPlan() {
-      System.out.println("Running Materializing of Plan (cost=" + blocksAccessed() + ")");
-   }
 }
