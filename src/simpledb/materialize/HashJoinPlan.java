@@ -1,6 +1,7 @@
 package simpledb.materialize;
 
 import simpledb.tx.Transaction;
+import simpledb.multibuffer.BufferNeeds;
 import simpledb.plan.Plan;
 import simpledb.query.*;
 import simpledb.record.*;
@@ -36,7 +37,8 @@ public class HashJoinPlan implements Plan {
     this.fldname2 = fldname2;
     this.tx = tx;
     // hash into (B-1) buckets
-    this.hashBucketCount = tx.availableBuffs() - 1;
+    this.hashBucketCount = BufferNeeds.bestFactor(tx.availableBuffs(),
+        Math.max(p1.blocksAccessed(), p2.blocksAccessed()));
 
     sch.addAll(p1.schema());
     sch.addAll(p2.schema());
