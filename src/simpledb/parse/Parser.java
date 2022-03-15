@@ -2,6 +2,12 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
+import simpledb.materialize.CountFn;
+import simpledb.materialize.MaxFn;
+import simpledb.materialize.MinFn;
+import simpledb.materialize.AvgFn;
+import simpledb.materialize.SumFn;
 import simpledb.query.*;
 import simpledb.record.*;
 
@@ -92,21 +98,46 @@ public class Parser {
          lex.eatKeyword("distinct");
          isDistinct = true;
       }
-      List<String> fields = selectList();
+      // Parse fields and agg funcs
+      List<String> fields = new ArrayList<>();
+      List<AggregationFn> aggFuncs = new ArrayList<>();
+      while (!lex.matchKeyword("from")) {
+         if (lex.matchAggType()) {
+            String currFunction = lex.eatAggType();
+            lex.eatDelim('(');
+            String currField = field();
+            AggregationFn temp = genAggregateFunction(currField, currFunction);
+            aggFuncs.add(temp);
+            fields.add(temp.fieldName());
+            lex.eatDelim(')');
+         } else {
+            fields.add(field());
+         }
+         if (lex.matchDelim(',')) {
+            lex.eatDelim(',');
+         }
+      }
+
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
       List<SortField> sortfields = new ArrayList<>();
+      List<String> groupbyfields = new ArrayList<>();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
+      }
+      if (lex.matchKeyword("group")) {
+         lex.eatKeyword("group");
+         lex.eatKeyword("by");
+         groupbyfields = selectList();
       }
       if (lex.matchKeyword("order")) {
          lex.eatKeyword("order");
          lex.eatKeyword("by");
          sortfields = sortList();
       }
-      return new QueryData(fields, tables, isDistinct, pred, sortfields);
+      return new QueryData(fields, tables, isDistinct, pred, sortfields, groupbyfields, aggFuncs);
    }
 
    private List<String> selectList() {
@@ -145,6 +176,23 @@ public class Parser {
          L.addAll(tableList());
       }
       return L;
+   }
+
+   private AggregationFn genAggregateFunction(String field, String function) {
+      switch (function) {
+         case "count":
+            return new CountFn(field);
+         case "max":
+            return new MaxFn(field);
+         case "min":
+            return new MinFn(field);
+         case "sum":
+            return new SumFn(field);
+         case "avg":
+            return new AvgFn(field);
+         default:
+            return null;
+      }
    }
 
    // Methods for parsing the various update commands

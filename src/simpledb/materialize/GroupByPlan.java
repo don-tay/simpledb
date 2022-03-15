@@ -27,12 +27,17 @@ public class GroupByPlan implements Plan {
     * @param aggfns      the aggregation functions
     * @param tx          the calling transaction
     */
-   public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      List<SortField> sortfields = new ArrayList<>();
-      for (String field : groupfields) {
-         sortfields.add(new SortField(field, "asc"));
+   public GroupByPlan(Transaction tx, Plan p, List<String> groupfields,
+      List<AggregationFn> aggfns) {
+      this.p = p;
+      if (!groupfields.isEmpty()) {
+         // If no grouping, save the cost of sorting
+         List<SortField> sortfields = new ArrayList<>();
+         for (String field : groupfields) {
+            sortfields.add(new SortField(field, "asc"));
+         }
+         this.p = new SortPlan(tx, p, sortfields);
       }
-      this.p = new SortPlan(tx, p, sortfields);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)
@@ -73,6 +78,7 @@ public class GroupByPlan implements Plan {
       int numgroups = 1;
       for (String fldname : groupfields)
          numgroups *= p.distinctValues(fldname);
+      // TODO: Update records output for aggregation only fields 
       return numgroups;
    }
 
