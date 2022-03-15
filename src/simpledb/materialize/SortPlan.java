@@ -80,6 +80,10 @@ public class SortPlan implements Plan {
       return p.distinctValues(fldname);
    }
 
+   public void printExecutionPlan() {
+      System.out.println("Running table sorting (cost=" + blocksAccessed() + ")");
+   }
+
    /**
     * Return the schema of the sorted table, which is the same as in the underlying
     * query.

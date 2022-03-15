@@ -88,4 +88,8 @@ public class IndexJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+
+   public void printExecutionPlan() {
+      System.out.println("Running index join (cost=" + blocksAccessed() + ")");
+   }
 }

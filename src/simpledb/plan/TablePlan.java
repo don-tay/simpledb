@@ -70,4 +70,9 @@ public class TablePlan implements Plan {
    public Schema schema() {
       return layout.schema();
    }
+
+   public void printExecutionPlan() {
+      System.out.println("Running Sequential Scan on " + tblname + " (cost=" + blocksAccessed() + " width="
+            + this.schema().fields().size() + ")");
+   }
 }
