@@ -51,7 +51,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4. Sort on the records
       if (!data.sortfields().isEmpty()) {
          currentplan = new SortPlan(tx, currentplan, data.sortfields());
-         currentplan.printExecutionPlan();
       }
 
 
