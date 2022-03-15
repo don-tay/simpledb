@@ -137,18 +137,18 @@ class TablePlanner {
 
       if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost
             && mergeJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running sort merge join");
          bestplan = mergeJoinPlan.orElse(null);
+         bestplan.printExecutionPlan();
       } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost
             && nestedLoopJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running nested loop join");
          bestplan = nestedLoopJoinPlan.orElse(null);
+         bestplan.printExecutionPlan();
       } else if (hashJoinPlanCost < nestedLoopJoinPlanCost && hashJoinPlanCost < mergeJoinPlanCost
             && hashJoinPlanCost < idxJoinPlanCost) {
-         System.out.println("Running hash join");
          bestplan = hashJoinPlan.orElse(null);
+         bestplan.printExecutionPlan();
       } else if (bestplan != null) {
-         System.out.println("Running index join");
+         bestplan.printExecutionPlan();
       } else {
          // return null when no bestplan
          return null;

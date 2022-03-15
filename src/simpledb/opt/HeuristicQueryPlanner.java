@@ -37,6 +37,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       // Step 2: Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
+      currentplan.printExecutionPlan();
 
       // Step 3: Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
@@ -50,12 +51,14 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4. Sort on the records
       if (!data.sortfields().isEmpty()) {
          currentplan = new SortPlan(tx, currentplan, data.sortfields());
+         currentplan.printExecutionPlan();
       }
 
 
       // Step 5: Group By And/Or aggregate
       if (!data.groupbyfields().isEmpty() || !data.aggregateFuncs().isEmpty()) {
          currentplan = new GroupByPlan(tx, currentplan, data.groupbyfields(), data.aggregateFuncs());
+         currentplan.printExecutionPlan();
       }
    
       // Step 5: Project on the field names and return
@@ -64,6 +67,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 6: Remove duplicate records
       if (data.isDistinct()) {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
+         currentplan.printExecutionPlan();
       }
 
       return currentplan;
