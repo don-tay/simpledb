@@ -53,6 +53,7 @@ public class HashJoinScan implements Scan {
       this.s2 = b2.get(currIdx).open();
       s1.beforeFirst();
       s2.beforeFirst();
+      hasJoinVal = false;
    }
 
    /**
