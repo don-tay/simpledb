@@ -5,6 +5,9 @@ import java.util.*;
 import simpledb.materialize.AggregationFn;
 import simpledb.materialize.CountFn;
 import simpledb.materialize.MaxFn;
+import simpledb.materialize.MinFn;
+import simpledb.materialize.AvgFn;
+import simpledb.materialize.SumFn;
 import simpledb.query.*;
 import simpledb.record.*;
 
@@ -181,6 +184,12 @@ public class Parser {
             return new CountFn(field);
          case "max":
             return new MaxFn(field);
+         case "min":
+            return new MinFn(field);
+         case "sum":
+            return new SumFn(field);
+         case "avg":
+            return new AvgFn(field);
          default:
             return null;
       }

@@ -21,8 +21,7 @@ public class GroupByScan implements Scan {
     * @param groupfields the group fields
     * @param aggfns the aggregation functions
     */
-   public GroupByScan(Scan s, List<String> groupfields,
-      List<AggregationFn> aggfns) {
+   public GroupByScan(Scan s, List<String> groupfields, List<AggregationFn> aggfns) {
       this.s = s;
       this.groupfields = groupfields;
       this.aggfns = aggfns;
@@ -58,7 +57,6 @@ public class GroupByScan implements Scan {
          return false;
       for (AggregationFn fn : aggfns)
          fn.processFirst(s);
-
       groupval = new GroupValue(s, groupfields);
       while(moregroups = s.next()) {
          GroupValue gv = new GroupValue(s, groupfields);
