@@ -12,6 +12,7 @@ public class Lexer {
    private Collection<String> keywords;
    private StreamTokenizer tok;
    private Collection<String> indexTypes;
+   private Collection<String> aggTypes;
    public static final String INDEX_TYPE_HASH = "hash";
    public static final String INDEX_TYPE_BTREE = "btree";
 
@@ -23,6 +24,7 @@ public class Lexer {
    public Lexer(String s) {
       initKeywords();
       initIndexType();
+      initAggTypes();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.'); // disallow "." in identifiers
       tok.wordChars('_', '_'); // allow "_" in identifiers
@@ -92,6 +94,15 @@ public class Lexer {
     */
    public boolean matchIndexType() {
       return tok.ttype == StreamTokenizer.TT_WORD && indexTypes.contains(tok.sval);
+   }
+
+   /**
+    * Returns true if the current token is a legal agg type.
+    * 
+    * @return true if the current token is an agg type
+    */
+    public boolean matchAggType() {
+      return tok.ttype == StreamTokenizer.TT_WORD && aggTypes.contains(tok.sval);
    }
 
    // Methods to "eat" the current token
@@ -178,6 +189,22 @@ public class Lexer {
       return s;
    }
 
+   /**
+    * Throws an exception if the current token is not an accepted Agg type
+    * Otherwise, return the agg type and move to the next token
+    * 
+    * @return the string value of the current token
+    */
+    public String eatAggType() {
+      if (!matchAggType()) {
+         System.out.println(tok.sval);
+         throw new BadSyntaxException();
+      }
+      String s = tok.sval;
+      nextToken();
+      return s;
+   }
+
    private void nextToken() {
       try {
          tok.nextToken();
@@ -187,12 +214,16 @@ public class Lexer {
    }
 
    private void initKeywords() {
-      keywords = Arrays.asList("select", "distinct", "from", "where", "and", "insert", "into", "values", "delete",
-            "update", "set", "create", "table", "int", "varchar", "view", "as", "index", "on", "using", "order", "by",
-            "asc", "desc");
+      keywords = Arrays.asList("select", "distinct", "from", "where", "and", "insert", "into", "values", "delete", "update", "set",
+            "create", "table", "int", "varchar", "view", "as", "index", "on", "using", "order", "by", "asc", "desc",
+            "group");
    }
 
    private void initIndexType() {
       indexTypes = Arrays.asList(INDEX_TYPE_HASH, INDEX_TYPE_BTREE);
+   }
+
+   private void initAggTypes() {
+      aggTypes = Arrays.asList("count", "min", "max", "sum", "avg");
    }
 }

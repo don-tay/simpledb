@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.*;
 import simpledb.tx.Transaction;
+import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
 import simpledb.metadata.MetadataMgr;
 import simpledb.parse.QueryData;
@@ -51,9 +52,15 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new SortPlan(tx, currentplan, data.sortfields());
       }
 
+
+      // Step 5: Group By And/Or aggregate
+      if (!data.groupbyfields().isEmpty() || !data.aggregateFuncs().isEmpty()) {
+         currentplan = new GroupByPlan(tx, currentplan, data.groupbyfields(), data.aggregateFuncs());
+      }
+   
       // Step 5: Project on the field names and return
       currentplan = new ProjectPlan(currentplan, data.fields());
-
+      
       // Step 6: Remove duplicate records
       if (data.isDistinct()) {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
