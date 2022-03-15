@@ -24,6 +24,7 @@ class TablePlanner {
    private Schema myschema;
    private Map<String, IndexInfo> indexes;
    private Transaction tx;
+   private String tblname;
 
    /**
     * Creates a new table planner. The specified predicate applies to the entire
@@ -35,6 +36,7 @@ class TablePlanner {
     * @param tx      the calling transaction
     */
    public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm) {
+      this.tblname = tblname;
       this.mypred = mypred;
       this.tx = tx;
       myplan = new TablePlan(tx, tblname, mdm);
@@ -50,8 +52,11 @@ class TablePlanner {
     */
    public Plan makeSelectPlan() {
       Plan p = makeIndexSelect();
-      if (p == null)
+      if (p == null) {
          p = myplan;
+         System.out.println("Running Sequential Scan on " + tblname + " (cost=" + p.blocksAccessed() + " width="
+               + p.schema().fields().size() + ")");
+      }
       return addSelectPred(p);
    }
 
@@ -91,7 +96,7 @@ class TablePlanner {
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
-            System.out.println("index on " + fldname + " used");
+            System.out.printf("Running Index Scan using " + fldname + "(cost=" + ii.blocksAccessed() + ")\n");
             return new IndexSelectPlan(myplan, ii, val);
          }
       }
@@ -137,18 +142,18 @@ class TablePlanner {
 
       if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost
             && mergeJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running sort merge");
+         System.out.println("Running sort merge join (cost=" + mergeJoinPlanCost + ")");
          bestplan = mergeJoinPlan.orElse(null);
       } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost
             && nestedLoopJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running nested loop join");
+         System.out.println("Running nested loop join (cost=" + nestedLoopJoinPlanCost + ")");
          bestplan = nestedLoopJoinPlan.orElse(null);
       } else if (hashJoinPlanCost < nestedLoopJoinPlanCost && hashJoinPlanCost < mergeJoinPlanCost
             && hashJoinPlanCost < idxJoinPlanCost) {
-         System.out.println("Running hash join");
+         System.out.println("Running hash join (cost=" + hashJoinPlanCost + ")");
          bestplan = hashJoinPlan.orElse(null);
       } else if (bestplan != null) {
-         System.out.println("Running index join");
+         System.out.println("Running index join (cost=" + idxJoinPlanCost + ")");
       } else {
          // return null when no bestplan
          return null;
