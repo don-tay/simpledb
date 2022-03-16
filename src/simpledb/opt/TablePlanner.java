@@ -88,6 +88,8 @@ class TablePlanner {
 
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
+         // TODO: return null if term involved is a non-equal (ie. all inequality + not
+         // equals) operator
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
