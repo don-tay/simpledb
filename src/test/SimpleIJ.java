@@ -35,9 +35,13 @@ public class SimpleIJ {
 				String cmd = sc.nextLine().trim();
 				if (cmd.startsWith("exit"))
 					break;
-				else if (cmd.startsWith("select"))
+				else if (cmd.startsWith("select")) {
+					long startTime = System.nanoTime();
 					doQuery(planner, cmd, tx);
-				else
+					long endTime = System.nanoTime();
+					long duration = (endTime - startTime) / 1000000;
+					System.out.println("Time Taken for Query Processing:" + duration + "ms");
+				} else
 					doUpdate(planner, cmd, tx);
 				System.out.print("\nSQL> ");
 			}
