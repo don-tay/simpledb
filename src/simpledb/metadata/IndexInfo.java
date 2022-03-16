@@ -95,6 +95,10 @@ public class IndexInfo {
       return fldname.equals(fname) ? 1 : si.distinctValues(fldname);
    }
 
+   public String getFieldName() {
+      return fldname;
+   }
+
    /**
     * Return the layout of the index records. The schema consists of the dataRID
     * (which is represented as two integers, the block number and the record ID)

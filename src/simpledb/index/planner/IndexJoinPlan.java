@@ -3,6 +3,7 @@ package simpledb.index.planner;
 import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.IndexInfo;
+import simpledb.plan.JoinPlan;
 import simpledb.plan.Plan;
 import simpledb.index.Index;
 import simpledb.index.query.IndexJoinScan;
@@ -11,7 +12,7 @@ import simpledb.index.query.IndexJoinScan;
   * relational algebra operator.
   * @author Edward Sciore
   */
-public class IndexJoinPlan implements Plan {
+public class IndexJoinPlan implements JoinPlan {
    private Plan p1, p2;
    private IndexInfo ii;
    private String joinfield;
@@ -87,5 +88,10 @@ public class IndexJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public void printJoinCost() {
+      System.out.println(
+            "Running index join on " + joinfield + " and " + ii.getFieldName() + " (cost=" + blocksAccessed() + ")");
    }
 }
