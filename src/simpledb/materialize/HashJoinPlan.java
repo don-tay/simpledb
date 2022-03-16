@@ -21,8 +21,9 @@ public class HashJoinPlan implements Plan {
   private int hashBucketCount;
 
   /**
-   * Creates a hashjoin plan for the two specified queries. The RHS must be
-   * materialized after it is sorted, in order to deal with possible duplicates.
+   * Creates a hashjoin plan for the two specified queries. Both tables are hashed
+   * into their respective partitions, V1...Vi and W1...Wi respectively. Page
+   * nested loop is used to probe the respective partitions.
    * 
    * @param p1       the LHS query plan
    * @param p2       the RHS query plan
@@ -58,20 +59,21 @@ public class HashJoinPlan implements Plan {
 
   /**
    * Return the number of block acceses required to perform hashjoin on the
-   * tables. Since a hashjoin can be preformed with a single pass through each
-   * table, the method returns the sum of the block accesses of the materialized
-   * tables. Page nested loop is then used to probe between the respective
-   * partitions. Hence, the cost is the sum of hashing, materializing and
-   * page-nested loop based probing (assuming partitions are evenly distributed.)
+   * tables. The hashing cost is the sum of reading the tables and writing the
+   * blocks into partitions. Hence, the total cost is the sum of hashing and
+   * page-nested loop based probing (partitions are assumed to be evenly
+   * distributed.)
    * 
    * @see simpledb.plan.Plan#blocksAccessed()
    */
   public int blocksAccessed() {
     Plan mp1 = new MaterializePlan(tx, p1);
     Plan mp2 = new MaterializePlan(tx, p2);
-    int hashingCost = mp1.blocksAccessed() + mp2.blocksAccessed();
-    // ? Review formula
-    return hashingCost + p1.blocksAccessed() + p2.blocksAccessed();
+    int hashingCost = 2 * (mp1.blocksAccessed() + mp2.blocksAccessed());
+    float p1RecordsPerBucket = p1.recordsOutput() / hashBucketCount;
+    float p2BlocksPerBucket = p2.blocksAccessed() / hashBucketCount;
+
+    return hashingCost + p1.blocksAccessed() + (int) Math.ceil(p1RecordsPerBucket * p2BlocksPerBucket);
   }
 
   /**
