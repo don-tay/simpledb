@@ -51,7 +51,7 @@ public class DistinctScan implements Scan {
           if (value.compareTo(prevRecVal) != 0) {
             for (int j = 0; j < fieldlist.size(); j++) {
               String field2 = fieldlist.get(j);
-              previousRecord.set(i, s.getVal(field2));
+              previousRecord.set(j, s.getVal(field2));
             }
             return true;
           }
@@ -87,6 +87,7 @@ public class DistinctScan implements Scan {
     else
       throw new RuntimeException("field " + fldname + " not found.");
   }
+
   /**
    * Return the value of the specified field in the current record. The value is
    * expressed as a Constant.
