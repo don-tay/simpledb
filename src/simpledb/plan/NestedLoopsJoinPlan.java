@@ -84,6 +84,6 @@ public class NestedLoopsJoinPlan implements JoinPlan {
    }
 
    public void printJoinCost() {
-      System.out.println("Running nested loop join on " + joinpred.toString() + " (cost=" + blocksAccessed() + ")");
+      System.out.println("Running nested loop join on fields " + joinpred.toString() + " (cost=" + blocksAccessed() + ")");
    }
 }

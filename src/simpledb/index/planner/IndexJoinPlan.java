@@ -92,6 +92,6 @@ public class IndexJoinPlan implements JoinPlan {
 
    public void printJoinCost() {
       System.out.println(
-            "Running index join on " + joinfield + " and " + ii.getFieldName() + " (cost=" + blocksAccessed() + ")");
+            "Running index join on fields " + joinfield + " and " + ii.getFieldName() + " (cost=" + blocksAccessed() + ")");
    }
 }

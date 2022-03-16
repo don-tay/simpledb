@@ -111,6 +111,6 @@ public class MergeJoinPlan implements JoinPlan {
 
    public void printJoinCost() {
       System.out.println(
-            "Running sort merge join on " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
+            "Running sort merge join on fields " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
    }
 }
