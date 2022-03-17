@@ -56,36 +56,36 @@ public class CreateStudentDB {
                "(4, 'sue', 20, 2022)", "(5, 'bob', 30, 2020)", "(6, 'kim', 20, 2020)", "(7, 'art', 30, 2021)",
                "(8, 'pat', 20, 2019)", "(9, 'lee', 10, 2021)", "(10, 'alan', 30, 2022)", "(11, 'ben', 30, 2022)",
                "(12, 'cathy', 10, 2023)", "(13, 'don', 10, 2022)", "(14, 'eames', 30, 2021)",
-               "(15, 'francis', 10, 2021)", "(16, 'gary', 30, 2022)", "(17, 'henry', 10, 2020)",
-               "(18, 'Ganny', 10, 2020)", "(19, 'Lyn', 20, 2021)", "(20, 'Meredith', 30, 2022)",
-               "(21, 'Tomasine', 40, 2020)", "(22, 'Evyn', 50, 2022)", "(23, 'Maible', 60, 2019)",
-               "(24, 'Diarmid', 70, 2019)", "(25, 'Geneva', 80, 2022)", "(26, 'Greer', 90, 2020)",
-               "(27, 'Cello', 100, 2022)", "(28, 'Levin', 110, 2022)", "(29, 'Courtenay', 120, 2022)",
-               "(30, 'Colby', 130, 2022)", "(31, 'Harland', 140, 2019)", "(32, 'Athene', 150, 2019)",
-               "(33, 'Augie', 160, 2022)", "(34, 'Isis', 170, 2020)", "(35, 'Billie', 180, 2021)",
-               "(36, 'Maximilian', 190, 2022)", "(37, 'Tallou', 200, 2019)", "(38, 'Nan', 10, 2020)",
-               "(39, 'Zulema', 20, 2020)", "(40, 'Annabella', 30, 2022)", "(41, 'Janeva', 40, 2020)",
-               "(42, 'Laina', 50, 2021)", "(43, 'Laurena', 60, 2019)", "(44, 'Peyton', 70, 2019)",
-               "(45, 'Willie', 80, 2021)", "(46, 'Oriana', 90, 2019)", "(47, 'Theodore', 100, 2020)",
-               "(48, 'Lindie', 110, 2020)", "(49, 'Vance', 120, 2019)", "(50, 'Hedvig', 130, 2020)",
-               "(51, 'Hamilton', 140, 2020)", "(52, 'Adria', 150, 2020)", "(53, 'Cayla', 160, 2022)",
-               "(54, 'Felicio', 170, 2021)", "(55, 'Danica', 180, 2019)", "(56, 'Hilde', 190, 2020)",
-               "(57, 'Conrad', 200, 2019)", "(58, 'Raoul', 10, 2021)", "(59, 'Cristobal', 20, 2022)",
+               "(15, 'francis', 10, 2021)", "(16, 'gary', 30, 2022)", "(17, 'henry', 10,2020)",
+               "(18, 'Ganny', 10, 2020)", "(19, 'Lyn', 20, 2021)", "(20, 'Meredith', 30,2022)",
+               "(21, 'Tomasine', 40, 2020)", "(22, 'Evyn', 50, 2022)", "(23, 'Maible', 60,2019)",
+               "(24, 'Diarmid', 70, 2019)", "(25, 'Geneva', 80, 2022)", "(26, 'Greer', 90,2020)",
+               "(27, 'Cello', 100, 2022)", "(28, 'Levin', 110, 2022)", "(29, 'Courtenay',120, 2022)",
+               "(30, 'Colby', 130, 2022)", "(31, 'Harland', 140, 2019)", "(32, 'Athene',150, 2019)",
+               "(33, 'Augie', 160, 2022)", "(34, 'Isis', 170, 2020)", "(35, 'Billie', 180,2021)",
+               "(36, 'Maximilian', 190, 2022)", "(37, 'Tallou', 200, 2019)", "(38, 'Nan',10, 2020)",
+               "(39, 'Zulema', 20, 2020)", "(40, 'Annabella', 30, 2022)", "(41, 'Janeva',40, 2020)",
+               "(42, 'Laina', 50, 2021)", "(43, 'Laurena', 60, 2019)", "(44, 'Peyton', 70,2019)",
+               "(45, 'Willie', 80, 2021)", "(46, 'Oriana', 90, 2019)", "(47, 'Theodore',100, 2020)",
+               "(48, 'Lindie', 110, 2020)", "(49, 'Vance', 120, 2019)", "(50, 'Hedvig', 130,2020)",
+               "(51, 'Hamilton', 140, 2020)", "(52, 'Adria', 150, 2020)", "(53, 'Cayla',160, 2022)",
+               "(54, 'Felicio', 170, 2021)", "(55, 'Danica', 180, 2019)", "(56, 'Hilde',190, 2020)",
+               "(57, 'Conrad', 200, 2019)", "(58, 'Raoul', 10, 2021)", "(59, 'Cristobal',20, 2022)",
                "(60, 'Ludwig', 30, 2019)" };
          for (int i = 0; i < studvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + studvals[i], tx);
          System.out.println(numRecordsUpdated + " STUDENT records inserted.");
 
-         s = "create table DEPT(DId int, DName varchar(8))";
+         s = "create table DEPT(DId int, DName varchar(16))";
          numRecordsUpdated = planner.executeUpdate(s, tx);
          System.out.println("Table DEPT created.");
 
          s = "insert into DEPT(DId, DName) values ";
          String[] deptvals = { "(10, 'compsci')", "(20, 'math')", "(30, 'drama')", "(40, 'Marketing')",
                "(50, 'Accounting')", "(60, 'Mechanical Engineering')", "(70, 'Environmental Engineering')",
-               "(80, 'Human Resources')", "(90, 'Research and Development')", "(100, 'Services')", "(110, 'Arts')",
-               "(120, 'Product Management')", "(130, 'Systems Engineering')", "(140, 'Finance')", "(150, 'Support')",
-               "(160, 'Engineering Science')", "(170, 'Chemical Engineering')", "(180, 'Biomedical Engineering')",
+               "(80, 'Human Resources')", "(90, 'Research and Development')", "(100,'Services')", "(110, 'Arts')",
+               "(120, 'Product Management')", "(130, 'Systems Engineering')", "(140,'Finance')", "(150, 'Support')",
+               "(160, 'Engineering Science')", "(170, 'Chemical Engineering')", "(180,'Biomedical Engineering')",
                "(190, 'Software Engineering')", "(200, 'Sales')" };
          for (int i = 0; i < deptvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + deptvals[i], tx);
@@ -97,7 +97,33 @@ public class CreateStudentDB {
 
          s = "insert into COURSE(CId, Title, DeptId) values ";
          String[] coursevals = { "(12, 'db systems', 10)", "(22, 'compilers', 10)", "(32, 'calculus', 20)",
-               "(42, 'algebra', 20)", "(52, 'acting', 30)", "(62, 'elocution', 30)" };
+               "(42, 'algebra', 20)", "(52, 'acting', 30)", "(62, 'elocution', 30)", "(72, 'Security Operations', 10)",
+               "(82, 'Fluid Mechanics', 20)", "(92, 'IVIG', 30)", "(102, 'Ulead VideoStudio', 40)", "(112, 'Zen', 50)",
+               "(122, 'Quality Patient Care', 60)", "(132, 'Vessel Operations', 70)", "(142, 'Academic Advising', 80)",
+               "(152, 'PeopleSoft', 90)", "(162, 'Space Planning', 100)", "(172, 'SDL Tridion', 110)",
+               "(182, 'Data Integration', 120)", "(192, 'DMAIC', 130)", "(202, 'Import', 140)", "(212, 'SSPS', 150)",
+               "(222, 'HMDA', 160)", "(232, 'HSIA', 170)", "(242, 'CPIM', 180)", "(252, 'HR Transformation', 190)",
+               "(262, 'Amazon EBS', 200)", "(272, 'MCH', 10)", "(282, 'BtB', 20)", "(292, 'PPE', 30)",
+               "(302, 'NT 4.0', 40)", "(312, 'EOR', 50)", "(322, 'ATLS', 60)", "(332, 'Sports Marketing', 70)",
+               "(342, 'Artistic Abilities', 80)", "(352, 'Benefits Administration', 90)", "(362, 'XForms', 100)",
+               "(372, 'Eaglesoft', 110)", "(382, 'Assessment Center', 120)", "(392, 'Performing Arts', 130)",
+               "(402, 'Reaction Kinetics', 140)", "(412, 'Utilization', 150)", "(422, 'Navigation', 160)",
+               "(432, 'CMTS', 170)", "(442, 'Overcome Objections', 180)", "(452, 'Joint Military Operations', 190)",
+               "(462, 'Igneous Petrology', 200)", "(472, 'Commercial Piloting', 10)", "(482, 'OmniPlan', 20)",
+               "(492, 'ICP-MS', 30)", "(502, 'Pyramix', 40)", "(512, 'ZigBee', 50)", "(522, 'TPE', 60)",
+               "(532, 'MSC Patran', 70)", "(542, 'QA Engineering', 80)", "(552, 'Current Affairs', 90)",
+               "(562, 'Helicopters', 100)", "(572, 'HR Policy Formulation', 110)", "(582, 'MCT', 120)",
+               "(592, 'HCS 2000', 130)", "(602, 'Outdoor Kitchens', 140)", "(612, 'VT', 150)", "(622, 'IEF', 160)",
+               "(632, 'Tourism', 170)", "(642, 'Smarty', 180)", "(652, 'GNU Debugger', 190)",
+               "(662, 'Job Scheduling', 200)", "(672, 'CSPro', 10)", "(682, 'Flight Safety', 20)",
+               "(692, 'Testing', 30)", "(702, 'Tour Management', 40)", "(712, 'HR Policy Formulation', 50)",
+               "(722, 'Home Equity Loans', 10)", "(732, 'Ultrafiltration', 20)", "(742, 'TDMoIP', 30)",
+               "(752, 'Time-efficient', 40)", "(762, 'Video Editing', 50)", "(772, 'CTA', 60)",
+               "(782, 'Localization', 70)", "(792, 'Allergy', 80)", "(802, 'Agents', 90)",
+               "(812, 'Systems Analysis', 100)", "(822, 'JCA', 110)", "(832, 'Wind', 120)",
+               "(842, 'Key Person Insurance', 130)", "(852, 'ZoomInfo', 140)", "(862, 'IBM iSeries', 150)",
+               "(872, 'Electrical Engineering', 160)", "(882, 'Corporate Governance', 170)", "(892, 'PCS7', 180)",
+               "(902, 'LSL', 190)", "(912, '10 Key', 200)" };
          for (int i = 0; i < coursevals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + coursevals[i], tx);
          System.out.println(numRecordsUpdated + " COURSE records inserted.");
