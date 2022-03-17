@@ -55,8 +55,9 @@ public class SortPlan implements Plan {
       Plan mp = new MaterializePlan(tx, p); // not opened; just for analysis
       int scanLength = mp.blocksAccessed();
       // number of passes = Math.ceil(log_{B-1}^{Math.ceil(Num pages / Num buffers)})
-      int sortedRuns = (int) Math.ceil((float) scanLength / tx.availableBuffs());
-      int mergePasses = (int) Math.ceil(SortPlan.customLog(tx.availableBuffs() - 1, (int)sortedRuns));
+      int buffersUsed = 3; // only 3 used including output buffer instead of tx.availableBuffs
+      int sortedRuns = (int) Math.ceil((float) scanLength / buffersUsed);
+      int mergePasses = (int) Math.ceil(SortPlan.customLog(buffersUsed - 1, (int) sortedRuns));
       if (scanLength == 0) {
          // In case there is no table to sort on, there is 0 cost.
          return 0;
