@@ -58,16 +58,16 @@ public class CreateStudentDB {
                "(12, 'cathy', 10, 2023)", "(13, 'don', 10, 2022)", "(14, 'eames', 30, 2021)",
                "(15, 'francis', 10, 2021)", "(16, 'gary', 30, 2022)", "(17, 'henry', 10,2020)",
                "(18, 'Ganny', 10, 2020)", "(19, 'Lyn', 20, 2021)", "(20, 'Meredith', 30,2022)",
-               "(21, 'Tomasine', 40, 2020)", "(22, 'Evyn', 50, 2022)", "(23, 'Maible', 60,2019)",
-               "(24, 'Diarmid', 70, 2019)", "(25, 'Geneva', 80, 2022)", "(26, 'Greer', 90,2020)",
-               "(27, 'Cello', 100, 2022)", "(28, 'Levin', 110, 2022)", "(29, 'Courtenay',120, 2022)",
-               "(30, 'Colby', 130, 2022)", "(31, 'Harland', 140, 2019)", "(32, 'Athene',150, 2019)",
-               "(33, 'Augie', 160, 2022)", "(34, 'Isis', 170, 2020)", "(35, 'Billie', 180,2021)",
-               "(36, 'Maximilian', 190, 2022)", "(37, 'Tallou', 200, 2019)", "(38, 'Nan',10, 2020)",
+               "(21, 'Tomasine', 40, 2020)", "(22, 'Evyn', 50, 2022)", "(23,'Maible',60,2019)",
+               "(24, 'Diarmid', 70, 2019)", "(25, 'Geneva', 80, 2022)", "(26,'Greer',90,2020)",
+               "(27, 'Cello', 100, 2022)", "(28, 'Levin', 11, 2022)", "(29,'Courtenay',12, 2022)",
+               "(30, 'Colby', 13, 2022)", "(31, 'Harland', 14, 2019)", "(32, 'Athene',15,2019)",
+               "(33, 'Augie', 16, 2022)", "(34, 'Isis', 17, 2020)", "(35, 'Billie',18,2021)",
+               "(36, 'Maximilian', 19, 2022)", "(37, 'Tallou', 20, 2019)", "(38, 'Nan',10,2020)",
                "(39, 'Zulema', 20, 2020)", "(40, 'Annabella', 30, 2022)", "(41, 'Janeva',40, 2020)",
-               "(42, 'Laina', 50, 2021)", "(43, 'Laurena', 60, 2019)", "(44, 'Peyton', 70,2019)",
-               "(45, 'Willie', 80, 2021)", "(46, 'Oriana', 90, 2019)", "(47, 'Theodore',100, 2020)",
-               "(48, 'Lindie', 110, 2020)", "(49, 'Vance', 120, 2019)", "(50, 'Hedvig', 130,2020)" };
+               "(42, 'Laina', 50, 2021)", "(43, 'Laurena', 60, 2019)", "(44, 'Peyton',70,2019)",
+               "(45, 'Willie', 80, 2021)", "(46, 'Oriana', 90, 2019)", "(47, 'Theodore',100,2020)",
+               "(48, 'Lindie', 11, 2020)", "(49, 'Vance', 12, 2019)", "(50, 'Hedvig',13,2020)" };
          for (int i = 0; i < studvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + studvals[i], tx);
          System.out.println(numRecordsUpdated + " STUDENT records inserted.");
@@ -82,7 +82,14 @@ public class CreateStudentDB {
                "(80, 'Human Resources')", "(90, 'Research and Development')", "(100,'Services')", "(110, 'Arts')",
                "(120, 'Product Management')", "(130, 'Systems Engineering')", "(140,'Finance')", "(150, 'Support')",
                "(160, 'Engineering Science')", "(170, 'Chemical Engineering')", "(180,'Biomedical Engineering')",
-               "(190, 'Software Engineering')", "(200, 'Sales')" };
+               "(190, 'Software Engineering')", "(200, 'Sales')", "(210, 'RELAX NG')", "(220, 'XaaS')",
+               "(230, 'dtSearch')", "(240, 'Ecological Restoration')", "(250, 'EEG')", "(260, 'DFR')",
+               "(270, 'Solar PV')", "(280, 'Job Scheduling')", "(290, 'Hypermesh')", "(300, 'Digital Journalism')",
+               "(310, 'Client Aquisition')", "(320, 'TD-SCDMA')", "(330, 'Digital Illustration')", "(340, 'WSS 2.0')",
+               "(350, 'HCFA')", "(360, 'PFlow')", "(370, 'RFID')", "(380, 'Hardware Diagnostics')", "(390, 'RFP')",
+               "(400, 'ESB')", "(410, 'Thermal Oxidation')", "(420, 'NBAR')", "(430, 'PWM')",
+               "(440, 'Urban Economics')", "(450, 'Ethics')", "(460, 'jQuery')", "(470, 'IRI Xlerate')",
+               "(480, 'MTTR')", "(490, 'UART')", "(500, 'XSI')" };
          for (int i = 0; i < deptvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + deptvals[i], tx);
          System.out.println(numRecordsUpdated + " DEPT records inserted.");
@@ -102,10 +109,10 @@ public class CreateStudentDB {
                "(262, 'Amazon EBS', 200)", "(272, 'MCH', 10)", "(282, 'BtB', 20)", "(292, 'PPE', 30)",
                "(302, 'NT 4.0', 40)", "(312, 'EOR', 50)", "(322, 'ATLS', 60)", "(332, 'Sports Marketing', 70)",
                "(342, 'Artistic Abilities', 80)", "(352, 'Benefits Administration', 90)", "(362, 'XForms', 100)",
-               "(372, 'Eaglesoft', 110)", "(382, 'Assessment Center', 120)", "(392, 'Performing Arts', 130)",
-               "(402, 'Reaction Kinetics', 140)", "(412, 'Utilization', 150)", "(422, 'Navigation', 160)",
-               "(432, 'CMTS', 170)", "(442, 'Overcome Objections', 180)", "(452, 'Joint Military Operations', 190)",
-               "(462, 'Igneous Petrology', 200)", "(472, 'Commercial Piloting', 10)", "(482, 'OmniPlan', 20)",
+               "(372, 'Eaglesoft', 110)", "(382, 'Assessment Center', 120)", "(392,'Performing Arts', 130)",
+               "(402, 'Reaction Kinetics', 140)", "(412, 'Utilization', 150)", "(422,'Navigation', 160)",
+               "(432, 'CMTS', 170)", "(442, 'Overcome Objections', 180)", "(452, 'JointMilitary Operations', 190)",
+               "(462, 'Igneous Petrology', 200)", "(472, 'Commercial Piloting', 10)", "(482,'OmniPlan', 20)",
                "(492, 'ICP-MS', 30)", "(502, 'Pyramix', 40)" };
          for (int i = 0; i < coursevals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + coursevals[i], tx);
@@ -126,12 +133,12 @@ public class CreateStudentDB {
                "(223, 172, 'Maéna', 2021)", "(233, 182, 'Gaïa', 2022)", "(243, 192, 'Personnalisée', 2021)",
                "(253, 202, 'Mélodie', 2017)", "(263, 212, 'Tán', 2019)", "(273, 222, 'Annotés', 2018)",
                "(283, 232, 'Gösta', 2022)", "(293, 242, 'Rébecca', 2017)", "(303, 252, 'Liè', 2021)",
-               "(313, 262, 'Cécile', 2016)", "(323, 272, 'Maï', 2016)", "(333, 282, 'Pénélope', 2019)",
-               "(343, 292, 'Ráo', 2018)", "(353, 302, 'Personnalisée', 2017)", "(363, 312, 'Fèi', 2020)",
-               "(373, 322, 'Kuí', 2020)", "(383, 332, 'Zoé', 2018)", "(393, 342, 'Personnalisée', 2017)",
-               "(403, 352, 'Marie-françoise', 2018)", "(413, 362, 'Eloïse', 2016)", "(423, 372, 'Bérengère', 2022)",
-               "(433, 382, 'Gaëlle', 2016)", "(443, 392, 'Maïté', 2016)", "(453, 402, 'Uò', 2018)",
-               "(463, 412, 'Naëlle', 2020)", "(473, 422, 'Lauréna', 2022)", "(483, 432, 'Maïté', 2022)",
+               "(313, 262, 'Cécile', 2016)", "(323, 272, 'Maï', 2016)", "(333, 282,'Pénélope', 2019)",
+               "(343, 292, 'Ráo', 2018)", "(353, 302, 'Personnalisée', 2017)", "(363, 312,'Fèi', 2020)",
+               "(373, 322, 'Kuí', 2020)", "(383, 332, 'Zoé', 2018)", "(393, 342,'Personnalisée', 2017)",
+               "(403, 352, 'Marie-françoise', 2018)", "(413, 362, 'Eloïse', 2016)", "(423,372, 'Bérengère', 2022)",
+               "(433, 382, 'Gaëlle', 2016)", "(443, 392, 'Maïté', 2016)", "(453, 402, 'Uò',2018)",
+               "(463, 412, 'Naëlle', 2020)", "(473, 422, 'Lauréna', 2022)", "(483, 432,'Maïté', 2022)",
                "(493, 442, 'Kévina', 2022)", "(503, 452, 'Solène', 2022)" };
          for (int i = 0; i < sectvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + sectvals[i], tx);
