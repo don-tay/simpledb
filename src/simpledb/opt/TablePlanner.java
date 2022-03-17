@@ -127,10 +127,10 @@ class TablePlanner {
             }
          }
          for (String fldname : myschema.fields()) {
-            String outerfield = joinpred.equatesWithField(fldname);
-            if (outerfield != null) {
-               mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
-               hashJoinPlan = Optional.ofNullable(new HashJoinPlan(tx, current, myplan, outerfield, fldname));
+            String outerfield = mypred.equatesWithField(fldname);
+            if (outerfield != null && currsch.hasField(outerfield)) {
+               mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, myplan, current, fldname, outerfield));
+               hashJoinPlan = Optional.ofNullable(new HashJoinPlan(tx, myplan, current, fldname, outerfield));
             }
          }
       }
