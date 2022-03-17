@@ -93,8 +93,10 @@ class TablePlanner {
 
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
-         Constant val = mypred.equatesWithConstant(fldname);
-         if (val != null) {
+         Term term = mypred.equatesWithConstant(fldname);
+         // create idx iff term has equality ('=') operator
+         if (term != null && !term.isNonEqualOpr()) {
+            Constant val = term.equatesWithConstant(fldname);
             IndexInfo ii = indexes.get(fldname);
             System.out.println("Running Index Scan using " + fldname + "(type=" + ii.indexType() + " cost="
                   + ii.blocksAccessed() + ")");

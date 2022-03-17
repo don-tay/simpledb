@@ -132,17 +132,17 @@ public class Predicate {
 
    /**
     * Determine if there is a term of the form "F=c" where F is the specified field
-    * and c is some constant. If so, the method returns that constant. If not, the
-    * method returns null.
+    * and c is some constant. If so, the method returns that Term (ie. Constant and
+    * Operator). If not, the method returns null.
     * 
     * @param fldname the name of the field
-    * @return either the constant or null
+    * @return either the term or null
     */
-   public Constant equatesWithConstant(String fldname) {
+   public Term equatesWithConstant(String fldname) {
       for (Term t : terms) {
          Constant c = t.equatesWithConstant(fldname);
          if (c != null)
-            return c;
+            return t;
       }
       return null;
    }
