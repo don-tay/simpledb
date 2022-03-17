@@ -60,9 +60,9 @@ public class SimpleIJ {
 
 			// print header
 			for (String fieldName : fieldNames) {
-				int width = fieldName.length() + 1;
-				totalWidth += width;
-				String fmt = "%" + width + "s";
+				int width = fieldName.length();
+				totalWidth += width + 3;
+				String fmt = "%" + width + "s | ";
 				System.out.format(fmt, fieldName);
 			}
 			System.out.println();
@@ -78,10 +78,10 @@ public class SimpleIJ {
 					String fmt = "%" + fieldName.length();
 					if (fldtype == Types.INTEGER) {
 						int ival = s.getInt(fieldName);
-						System.out.format(fmt + "d", ival);
+						System.out.format(fmt + "d | ", ival);
 					} else {
 						String sval = s.getString(fieldName);
-						System.out.format(fmt + "s", sval);
+						System.out.format(fmt + "s | ", sval);
 					}
 				}
 				System.out.println();
