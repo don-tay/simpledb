@@ -54,8 +54,13 @@ public class SortPlan implements Plan {
     public int blocksAccessed() {
       Plan mp = new MaterializePlan(tx, p); // not opened; just for analysis
       int scanLength = mp.blocksAccessed();
-      int mergePasses = SortPlan.customLog(tx.availableBuffs() - 1, 
-         scanLength / tx.availableBuffs());
+      // number of passes = Math.ceil(log_{B-1}^{Math.ceil(Num pages / Num buffers)})
+      int sortedRuns = (int) Math.ceil((float) scanLength / tx.availableBuffs());
+      int mergePasses = (int) Math.ceil(SortPlan.customLog(tx.availableBuffs() - 1, (int)sortedRuns));
+      if (scanLength == 0) {
+         // In case there is no table to sort on, there is 0 cost.
+         return 0;
+      }
       return 2 * scanLength * (1 + mergePasses);
    }
 
@@ -159,9 +164,9 @@ public class SortPlan implements Plan {
     * @param base base of the custom log 
     * @param argument argument of the custom log   
     */
-    public static int customLog(int base, int argument) {
+    public static double customLog(int base, int argument) {
       double numerator = Math.log(argument);
       double denominator = Math.log(base);
-      return (int)(numerator / denominator);
+      return numerator / denominator;
    }
 }
