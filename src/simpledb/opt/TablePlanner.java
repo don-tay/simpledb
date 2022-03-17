@@ -165,6 +165,7 @@ class TablePlanner {
 
    private Plan makeProductJoin(Plan current, Schema currsch) {
       Plan p = makeProductPlan(current);
+      System.out.println("Running cross product (cost=" + p.blocksAccessed() + ")");
       return addJoinPred(p, currsch);
    }
 
