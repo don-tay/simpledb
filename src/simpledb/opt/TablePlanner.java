@@ -96,8 +96,8 @@ class TablePlanner {
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
-            System.out.println(
-                  "Running Index Scan on " + tblname + " using " + fldname + "(cost=" + ii.blocksAccessed() + ")");
+            System.out.println("Running Index Scan using " + fldname + "(type=" + ii.indexType() + " cost="
+                  + ii.blocksAccessed() + ")");
             return new IndexSelectPlan(myplan, ii, val);
          }
       }

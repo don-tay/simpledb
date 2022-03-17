@@ -27,7 +27,7 @@ public class IndexInfo {
     * 
     * @param idxname   the name of the index
     * @param fldname   the name of the indexed field
-    * @param indextype the type if the index
+    * @param indextype the type of the index
     * @param tx        the calling transaction
     * @param tblSchema the schema of the table
     * @param si        the statistics for the table
@@ -97,6 +97,13 @@ public class IndexInfo {
 
    public String getFieldName() {
       return fldname;
+   }
+
+   /**
+    * @return type of index used for indexing
+    */
+   public String indexType() {
+      return indextype;
    }
 
    /**
