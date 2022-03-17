@@ -60,10 +60,11 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 6: Project on the field names and return
       currentplan = new ProjectPlan(currentplan, data.fields());
 
-      // Step 7: Remove duplicate records and sort (iff distinct plan is created)
-      if (data.isDistinct() && !data.sortfields().isEmpty()) {
+      // Step 7: Remove duplicate records and sort where appropriate
+      if (data.isDistinct()) {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
-         currentplan = new SortPlan(tx, currentplan, data.sortfields());
+         if (!data.sortfields().isEmpty())
+            currentplan = new SortPlan(tx, currentplan, data.sortfields());
       }
 
       return currentplan;
