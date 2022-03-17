@@ -24,6 +24,7 @@ class TablePlanner {
    private Schema myschema;
    private Map<String, IndexInfo> indexes;
    private Transaction tx;
+   private String tblname;
 
    /**
     * Creates a new table planner. The specified predicate applies to the entire
@@ -35,6 +36,7 @@ class TablePlanner {
     * @param tx      the calling transaction
     */
    public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm) {
+      this.tblname = tblname;
       this.mypred = mypred;
       this.tx = tx;
       myplan = new TablePlan(tx, tblname, mdm);
@@ -50,8 +52,11 @@ class TablePlanner {
     */
    public Plan makeSelectPlan() {
       Plan p = makeIndexSelect();
-      if (p == null)
+      if (p == null) {
          p = myplan;
+         System.out.println("Running Sequential Scan on " + tblname + " (cost=" + p.blocksAccessed() + " width="
+               + p.schema().fields().size() + ")");
+      }
       return addSelectPred(p);
    }
 
@@ -91,7 +96,8 @@ class TablePlanner {
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
-            System.out.println("index on " + fldname + " used");
+            System.out.println("Running Index Scan using " + fldname + "(type=" + ii.indexType() + " cost="
+                  + ii.blocksAccessed() + ")");
             return new IndexSelectPlan(myplan, ii, val);
          }
       }
@@ -99,12 +105,12 @@ class TablePlanner {
    }
 
    private Plan makeBestJoinMethod(Plan current, Schema currsch, Predicate joinpred) {
-      Optional<Plan> idxJoinPlan = Optional.empty();
-      Optional<Plan> mergeJoinPlan = Optional.empty();
-      Optional<Plan> hashJoinPlan = Optional.empty();
+      Optional<JoinPlan> idxJoinPlan = Optional.empty();
+      Optional<JoinPlan> mergeJoinPlan = Optional.empty();
+      Optional<JoinPlan> hashJoinPlan = Optional.empty();
 
       // optimize for smaller blocksAccessed as the outer page (ie. LHS)
-      Optional<Plan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
+      Optional<JoinPlan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
             ? Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred))
             : Optional.ofNullable(new NestedLoopsJoinPlan(myplan, current, joinpred));
 
@@ -133,29 +139,26 @@ class TablePlanner {
             : Integer.MAX_VALUE;
       int hashJoinPlanCost = hashJoinPlan.isPresent() ? hashJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
 
-      Plan bestplan = idxJoinPlan.orElse(null);
+      JoinPlan bestplan = idxJoinPlan.orElse(null);
 
       if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost
             && mergeJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running sort merge");
          bestplan = mergeJoinPlan.orElse(null);
       } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost
             && nestedLoopJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running nested loop join");
          bestplan = nestedLoopJoinPlan.orElse(null);
       } else if (hashJoinPlanCost < nestedLoopJoinPlanCost && hashJoinPlanCost < mergeJoinPlanCost
             && hashJoinPlanCost < idxJoinPlanCost) {
-         System.out.println("Running hash join");
          bestplan = hashJoinPlan.orElse(null);
-      } else if (bestplan != null) {
-         System.out.println("Running index join");
-      } else {
+      } else if (bestplan == null) {
          // return null when no bestplan
          return null;
       }
 
-      bestplan = addSelectPred(bestplan);
-      return addJoinPred(bestplan, currsch);
+      bestplan.printJoinCost();
+
+      Plan newplan = addSelectPred(bestplan);
+      return addJoinPred(newplan, currsch);
    }
 
    private Plan makeProductJoin(Plan current, Schema currsch) {

@@ -5,7 +5,7 @@ import simpledb.query.Predicate;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
 
-public class NestedLoopsJoinPlan implements Plan {
+public class NestedLoopsJoinPlan implements JoinPlan {
    private Plan p1, p2;
    private Predicate joinpred;
    private Schema sch = new Schema();
@@ -81,5 +81,9 @@ public class NestedLoopsJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public void printJoinCost() {
+      System.out.println("Running nested loop join on fields " + joinpred.toString() + " (cost=" + blocksAccessed() + ")");
    }
 }

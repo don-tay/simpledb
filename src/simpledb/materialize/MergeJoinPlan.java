@@ -1,6 +1,7 @@
 package simpledb.materialize;
 
 import simpledb.tx.Transaction;
+import simpledb.plan.JoinPlan;
 import simpledb.plan.Plan;
 import simpledb.query.*;
 import simpledb.record.*;
@@ -12,7 +13,7 @@ import java.util.*;
  * 
  * @author Edward Sciore
  */
-public class MergeJoinPlan implements Plan {
+public class MergeJoinPlan implements JoinPlan {
    private Plan p1, p2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
@@ -58,8 +59,7 @@ public class MergeJoinPlan implements Plan {
     * Return the number of block acceses required to mergejoin the sorted tables.
     * Since a mergejoin can be preformed with a single pass through each table, the
     * method returns the sum of the block accesses of the materialized sorted
-    * tables. Includes the one-time cost of materializing and
-    * sorting the records.
+    * tables. Includes the one-time cost of materializing and sorting the records.
     * 
     * @see simpledb.plan.Plan#blocksAccessed()
     */
@@ -107,5 +107,10 @@ public class MergeJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public void printJoinCost() {
+      System.out.println(
+            "Running sort merge join on fields " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
    }
 }
