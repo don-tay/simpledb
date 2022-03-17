@@ -98,6 +98,10 @@ public class MultibufferProductPlan implements Plan {
       return schema;
    }
 
+   public void printJoinCost() {
+      System.out.println("Running multi buffer cross product (cost=" + blocksAccessed() + ")");
+   }
+
    private TempTable copyRecordsFrom(Plan p) {
       Scan   src = p.open(); 
       Schema sch = p.schema();
