@@ -81,7 +81,12 @@ public class CreateStudentDB {
          System.out.println("Table DEPT created.");
 
          s = "insert into DEPT(DId, DName) values ";
-         String[] deptvals = { "(10, 'compsci')", "(20, 'math')", "(30, 'drama')" };
+         String[] deptvals = { "(10, 'compsci')", "(20, 'math')", "(30, 'drama')", "(40, 'Marketing')",
+               "(50, 'Accounting')", "(60, 'Mechanical Engineering')", "(70, 'Environmental Engineering')",
+               "(80, 'Human Resources')", "(90, 'Research and Development')", "(100, 'Services')", "(110, 'Arts')",
+               "(120, 'Product Management')", "(130, 'Systems Engineering')", "(140, 'Finance')", "(150, 'Support')",
+               "(160, 'Engineering Science')", "(170, 'Chemical Engineering')", "(180, 'Biomedical Engineering')",
+               "(190, 'Software Engineering')", "(200, 'Sales')" };
          for (int i = 0; i < deptvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + deptvals[i], tx);
          System.out.println(numRecordsUpdated + " DEPT records inserted.");
