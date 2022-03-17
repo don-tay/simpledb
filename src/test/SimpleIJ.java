@@ -61,7 +61,7 @@ public class SimpleIJ {
 			// print header
 			for (String fieldName : fieldNames) {
 				int width = fieldName.length();
-				totalWidth += width;
+				totalWidth += width + 3;
 				String fmt = "%" + width + "s | ";
 				System.out.format(fmt, fieldName);
 			}
