@@ -95,6 +95,10 @@ public class IndexInfo {
       return fldname.equals(fname) ? 1 : si.distinctValues(fldname);
    }
 
+   public String getFieldName() {
+      return fldname;
+   }
+
    /**
     * @return type of index used for indexing
     */

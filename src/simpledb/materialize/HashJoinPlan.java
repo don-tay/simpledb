@@ -2,6 +2,7 @@ package simpledb.materialize;
 
 import simpledb.tx.Transaction;
 import simpledb.multibuffer.BufferNeeds;
+import simpledb.plan.JoinPlan;
 import simpledb.plan.Plan;
 import simpledb.query.*;
 import simpledb.record.*;
@@ -13,7 +14,7 @@ import java.util.*;
  * 
  * @author Edward Sciore
  */
-public class HashJoinPlan implements Plan {
+public class HashJoinPlan implements JoinPlan {
   private Plan p1, p2;
   private String fldname1, fldname2;
   private Schema sch = new Schema();
@@ -143,5 +144,9 @@ public class HashJoinPlan implements Plan {
       tempTables.add(new TempTable(tx, p.schema()));
     }
     return tempTables;
+  }
+
+  public void printJoinCost() {
+    System.out.println("Running hash join on fields " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
   }
 }

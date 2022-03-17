@@ -105,12 +105,12 @@ class TablePlanner {
    }
 
    private Plan makeBestJoinMethod(Plan current, Schema currsch, Predicate joinpred) {
-      Optional<Plan> idxJoinPlan = Optional.empty();
-      Optional<Plan> mergeJoinPlan = Optional.empty();
-      Optional<Plan> hashJoinPlan = Optional.empty();
+      Optional<JoinPlan> idxJoinPlan = Optional.empty();
+      Optional<JoinPlan> mergeJoinPlan = Optional.empty();
+      Optional<JoinPlan> hashJoinPlan = Optional.empty();
 
       // optimize for smaller blocksAccessed as the outer page (ie. LHS)
-      Optional<Plan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
+      Optional<JoinPlan> nestedLoopJoinPlan = (current.recordsOutput() <= myplan.recordsOutput())
             ? Optional.ofNullable(new NestedLoopsJoinPlan(current, myplan, joinpred))
             : Optional.ofNullable(new NestedLoopsJoinPlan(myplan, current, joinpred));
 
@@ -139,29 +139,26 @@ class TablePlanner {
             : Integer.MAX_VALUE;
       int hashJoinPlanCost = hashJoinPlan.isPresent() ? hashJoinPlan.get().blocksAccessed() : Integer.MAX_VALUE;
 
-      Plan bestplan = idxJoinPlan.orElse(null);
+      JoinPlan bestplan = idxJoinPlan.orElse(null);
 
       if (mergeJoinPlanCost < nestedLoopJoinPlanCost && mergeJoinPlanCost < idxJoinPlanCost
             && mergeJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running sort merge join (cost=" + mergeJoinPlanCost + ")");
          bestplan = mergeJoinPlan.orElse(null);
       } else if (nestedLoopJoinPlanCost < idxJoinPlanCost && nestedLoopJoinPlanCost < mergeJoinPlanCost
             && nestedLoopJoinPlanCost < hashJoinPlanCost) {
-         System.out.println("Running nested loop join (cost=" + nestedLoopJoinPlanCost + ")");
          bestplan = nestedLoopJoinPlan.orElse(null);
       } else if (hashJoinPlanCost < nestedLoopJoinPlanCost && hashJoinPlanCost < mergeJoinPlanCost
             && hashJoinPlanCost < idxJoinPlanCost) {
-         System.out.println("Running hash join (cost=" + hashJoinPlanCost + ")");
          bestplan = hashJoinPlan.orElse(null);
-      } else if (bestplan != null) {
-         System.out.println("Running index join (cost=" + idxJoinPlanCost + ")");
-      } else {
+      } else if (bestplan == null) {
          // return null when no bestplan
          return null;
       }
 
-      bestplan = addSelectPred(bestplan);
-      return addJoinPred(bestplan, currsch);
+      bestplan.printJoinCost();
+
+      Plan newplan = addSelectPred(bestplan);
+      return addJoinPred(newplan, currsch);
    }
 
    private Plan makeProductJoin(Plan current, Schema currsch) {
