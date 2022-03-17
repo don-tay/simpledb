@@ -67,11 +67,7 @@ public class CreateStudentDB {
                "(39, 'Zulema', 20, 2020)", "(40, 'Annabella', 30, 2022)", "(41, 'Janeva',40, 2020)",
                "(42, 'Laina', 50, 2021)", "(43, 'Laurena', 60, 2019)", "(44, 'Peyton', 70,2019)",
                "(45, 'Willie', 80, 2021)", "(46, 'Oriana', 90, 2019)", "(47, 'Theodore',100, 2020)",
-               "(48, 'Lindie', 110, 2020)", "(49, 'Vance', 120, 2019)", "(50, 'Hedvig', 130,2020)",
-               "(51, 'Hamilton', 140, 2020)", "(52, 'Adria', 150, 2020)", "(53, 'Cayla',160, 2022)",
-               "(54, 'Felicio', 170, 2021)", "(55, 'Danica', 180, 2019)", "(56, 'Hilde',190, 2020)",
-               "(57, 'Conrad', 200, 2019)", "(58, 'Raoul', 10, 2021)", "(59, 'Cristobal',20, 2022)",
-               "(60, 'Ludwig', 30, 2019)" };
+               "(48, 'Lindie', 110, 2020)", "(49, 'Vance', 120, 2019)", "(50, 'Hedvig', 130,2020)" };
          for (int i = 0; i < studvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + studvals[i], tx);
          System.out.println(numRecordsUpdated + " STUDENT records inserted.");
@@ -110,20 +106,7 @@ public class CreateStudentDB {
                "(402, 'Reaction Kinetics', 140)", "(412, 'Utilization', 150)", "(422, 'Navigation', 160)",
                "(432, 'CMTS', 170)", "(442, 'Overcome Objections', 180)", "(452, 'Joint Military Operations', 190)",
                "(462, 'Igneous Petrology', 200)", "(472, 'Commercial Piloting', 10)", "(482, 'OmniPlan', 20)",
-               "(492, 'ICP-MS', 30)", "(502, 'Pyramix', 40)", "(512, 'ZigBee', 50)", "(522, 'TPE', 60)",
-               "(532, 'MSC Patran', 70)", "(542, 'QA Engineering', 80)", "(552, 'Current Affairs', 90)",
-               "(562, 'Helicopters', 100)", "(572, 'HR Policy Formulation', 110)", "(582, 'MCT', 120)",
-               "(592, 'HCS 2000', 130)", "(602, 'Outdoor Kitchens', 140)", "(612, 'VT', 150)", "(622, 'IEF', 160)",
-               "(632, 'Tourism', 170)", "(642, 'Smarty', 180)", "(652, 'GNU Debugger', 190)",
-               "(662, 'Job Scheduling', 200)", "(672, 'CSPro', 10)", "(682, 'Flight Safety', 20)",
-               "(692, 'Testing', 30)", "(702, 'Tour Management', 40)", "(712, 'HR Policy Formulation', 50)",
-               "(722, 'Home Equity Loans', 10)", "(732, 'Ultrafiltration', 20)", "(742, 'TDMoIP', 30)",
-               "(752, 'Time-efficient', 40)", "(762, 'Video Editing', 50)", "(772, 'CTA', 60)",
-               "(782, 'Localization', 70)", "(792, 'Allergy', 80)", "(802, 'Agents', 90)",
-               "(812, 'Systems Analysis', 100)", "(822, 'JCA', 110)", "(832, 'Wind', 120)",
-               "(842, 'Key Person Insurance', 130)", "(852, 'ZoomInfo', 140)", "(862, 'IBM iSeries', 150)",
-               "(872, 'Electrical Engineering', 160)", "(882, 'Corporate Governance', 170)", "(892, 'PCS7', 180)",
-               "(902, 'LSL', 190)", "(912, '10 Key', 200)" };
+               "(492, 'ICP-MS', 30)", "(502, 'Pyramix', 40)" };
          for (int i = 0; i < coursevals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + coursevals[i], tx);
          System.out.println(numRecordsUpdated + " COURSE records inserted.");
@@ -134,7 +117,22 @@ public class CreateStudentDB {
 
          s = "insert into SECTION(SectId, CourseId, Prof, YearOffered) values ";
          String[] sectvals = { "(13, 12, 'turing', 2018)", "(23, 12, 'turing', 2019)", "(33, 32, 'newton', 2019)",
-               "(43, 32, 'einstein', 2017)", "(53, 62, 'brando', 2018)" };
+               "(43, 32, 'einstein', 2017)", "(53, 62, 'brando', 2018)", "(63, 12, 'Magdalène', 2017)",
+               "(73, 22, 'Mélina', 2017)", "(83, 32, 'Léone', 2016)", "(93, 42, 'Océane', 2018)",
+               "(103, 52, 'Océanne', 2016)", "(113, 62, 'Valérie', 2017)", "(123, 72, 'Simplifiés', 2022)",
+               "(133, 82, 'Eugénie', 2019)", "(143, 92, 'Mélanie', 2016)", "(153, 102, 'Loïs', 2018)",
+               "(163, 112, 'Réservés', 2022)", "(173, 122, 'Maëlyss', 2021)", "(183, 132, 'Marie-noël', 2021)",
+               "(193, 142, 'Görel', 2018)", "(203, 152, 'Mylène', 2020)", "(213, 162, 'Dorothée', 2016)",
+               "(223, 172, 'Maéna', 2021)", "(233, 182, 'Gaïa', 2022)", "(243, 192, 'Personnalisée', 2021)",
+               "(253, 202, 'Mélodie', 2017)", "(263, 212, 'Tán', 2019)", "(273, 222, 'Annotés', 2018)",
+               "(283, 232, 'Gösta', 2022)", "(293, 242, 'Rébecca', 2017)", "(303, 252, 'Liè', 2021)",
+               "(313, 262, 'Cécile', 2016)", "(323, 272, 'Maï', 2016)", "(333, 282, 'Pénélope', 2019)",
+               "(343, 292, 'Ráo', 2018)", "(353, 302, 'Personnalisée', 2017)", "(363, 312, 'Fèi', 2020)",
+               "(373, 322, 'Kuí', 2020)", "(383, 332, 'Zoé', 2018)", "(393, 342, 'Personnalisée', 2017)",
+               "(403, 352, 'Marie-françoise', 2018)", "(413, 362, 'Eloïse', 2016)", "(423, 372, 'Bérengère', 2022)",
+               "(433, 382, 'Gaëlle', 2016)", "(443, 392, 'Maïté', 2016)", "(453, 402, 'Uò', 2018)",
+               "(463, 412, 'Naëlle', 2020)", "(473, 422, 'Lauréna', 2022)", "(483, 432, 'Maïté', 2022)",
+               "(493, 442, 'Kévina', 2022)", "(503, 452, 'Solène', 2022)" };
          for (int i = 0; i < sectvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + sectvals[i], tx);
          System.out.println(numRecordsUpdated + " SECTION records inserted.");
