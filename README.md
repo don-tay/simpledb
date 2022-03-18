@@ -47,7 +47,7 @@ Done in the CreateStudentDB.java file
 
 ### WHERE (equality)
 
-`select sid, sname from student where sname = 9`
+`select sid, sname from student where sid = 5`
 
 ### WHERE (non equality)
 
@@ -71,7 +71,7 @@ Done in the CreateStudentDB.java file
 
 #### Multiple ORDER BY
 
-`select cid, title, deptid from course order by cid desc, title, deptid desc`
+`select gradyear, sname, sid from student order by gradyear desc, sid desc`
 
 ### Group By
 
