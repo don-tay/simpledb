@@ -120,15 +120,15 @@ class TablePlanner {
       // "<>", "<=", "<"
       if (!joinpred.hasNonEqualOpr()) {
          for (String fldname : indexes.keySet()) {
-            String outerfield = joinpred.equatesWithField(fldname);
+            String outerfield = mypred.equatesWithField(fldname);
             if (outerfield != null && currsch.hasField(outerfield)) {
                IndexInfo ii = indexes.get(fldname);
                idxJoinPlan = Optional.ofNullable(new IndexJoinPlan(current, myplan, ii, outerfield));
             }
          }
          for (String fldname : myschema.fields()) {
-            String outerfield = joinpred.equatesWithField(fldname);
-            if (outerfield != null) {
+            String outerfield = mypred.equatesWithField(fldname);
+            if (outerfield != null && currsch.hasField(outerfield)) {
                mergeJoinPlan = Optional.ofNullable(new MergeJoinPlan(tx, current, myplan, outerfield, fldname));
                hashJoinPlan = Optional.ofNullable(new HashJoinPlan(tx, current, myplan, outerfield, fldname));
             }

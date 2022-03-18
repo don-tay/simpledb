@@ -149,6 +149,7 @@ public class HashJoinPlan implements JoinPlan {
   }
 
   public void printJoinCost() {
-    System.out.println("Running hash join on fields " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
+    System.out
+        .println("Running hash join on fields " + fldname1 + " and " + fldname2 + " (cost=" + blocksAccessed() + ")");
   }
 }
