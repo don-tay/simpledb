@@ -71,6 +71,10 @@ public class HashJoinPlan implements JoinPlan {
     Plan mp1 = new MaterializePlan(tx, p1);
     Plan mp2 = new MaterializePlan(tx, p2);
     int hashingCost = 2 * (mp1.blocksAccessed() + mp2.blocksAccessed());
+    if (tx.availableBuffs() >= Math.sqrt(Math.max(mp1.blocksAccessed(), mp2.blocksAccessed()))) {
+      // 3 iterations of read and write - 2 for partitioning, 1 for probing
+      return hashingCost + mp1.blocksAccessed() + mp2.blocksAccessed();
+    }
     float p1RecordsPerBucket = p1.recordsOutput() / hashBucketCount;
     float p2BlocksPerBucket = p2.blocksAccessed() / hashBucketCount;
 
