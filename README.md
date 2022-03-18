@@ -101,26 +101,19 @@ Done in the CreateStudentDB.java file
 ### Multiple conditions
 `select gradyear, count(sid) from student where gradyear > 2020 and sname > 'bob' group by gradyear order by countofsid`
 
+`select sid,sname,grade from student,enroll where sid>studentid`
+
 ## Two table joins
 
-### Nested Loop join
-`select sid,sname,grade from student,enroll where sid=studentid and majorid > 20`
-
-### SortMerge Join
+`select sid,sname,grade from student,enroll where sid>studentid`
+`select sname, grade from student, enroll where sid=studentid`
 
 ### Index Join
-
-### Hash Join
-`select sname, grade from student, enroll where sid=studentid`
+`select sid,sname,dname from dept,student where majorid=did`
 
 
 ## Four table joins
 
-### Nested Loop join
 
-### SortMerge Join
 `select sid,sname,dname,title,grade from student,dept,course,enroll where sid=studentid and deptid=did and majorid=did`
 
-### Index Join
-
-### Hash Join
