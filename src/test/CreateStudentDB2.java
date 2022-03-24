@@ -93,7 +93,8 @@ public class CreateStudentDB2 {
                "(350, 'HCFA')", "(360, 'PFlow')", "(370, 'RFID')", "(380, 'Hardware Diagnostics')", "(390, 'RFP')",
                "(400, 'ESB')", "(410, 'Thermal Oxidation')", "(420, 'NBAR')", "(430, 'PWM')",
                "(440, 'Urban Economics')", "(450, 'Ethics')", "(460, 'jQuery')", "(470, 'IRI Xlerate')",
-               "(480, 'MTTR')", "(490, 'UART')", "(500, 'XSI')" };
+               // duplicate rows
+               "(40, 'Marketing')", "(50, 'Accounting')", "(60, 'Mechanical Engineering')" };
          for (int i = 0; i < deptvals.length; i++)
             numRecordsUpdated = planner.executeUpdate(s + deptvals[i], tx);
          System.out.println(numRecordsUpdated + " DEPT records inserted.");

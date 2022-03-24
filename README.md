@@ -37,7 +37,7 @@ Implementation is an extension of SimpleDB from Edward Sciore. Project is used s
 
 ## Create tables with 50 - 100 rows, some duplicate rows
 
-Done in the CreateStudentDB.java file
+Done in the CreateStudentDB2.java file
 
 ## Single Table Queries
 
@@ -118,7 +118,10 @@ Done in the CreateStudentDB.java file
 
 ## Four table joins
 
+Hash/Sort-merge/Nested-loop Join:
 `select sid,sname,dname,title,grade from student,dept,course,enroll where sid=studentid and deptid=did and majorid=did`
+Idx Join:
+`select sid,sname,did,title,grade from dept,course,enroll,student where sid=studentid and majorid=did and deptid=did`
 
 ## Additional queries
 
