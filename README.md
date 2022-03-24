@@ -37,7 +37,7 @@ Implementation is an extension of SimpleDB from Edward Sciore. Project is used s
 
 ## Create tables with 50 - 100 rows, some duplicate rows
 
-Done in the CreateStudentDB.java file
+Done in the CreateStudentDB2.java file
 
 ## Single Table Queries
 
@@ -110,7 +110,7 @@ Done in the CreateStudentDB.java file
 ## Two table joins
 
 `select sid,studentid,grade from student,enroll where sid>studentid`
-`select sid,studentid,sname, grade from student, enroll where sid=studentid`
+`select sid,studentid,sname, grade from enroll, student where sid=studentid`
 
 ### Index Join
 
@@ -118,4 +118,25 @@ Done in the CreateStudentDB.java file
 
 ## Four table joins
 
+Hash/Sort-merge/Nested-loop Join:
 `select sid,sname,dname,title,grade from student,dept,course,enroll where sid=studentid and deptid=did and majorid=did`
+Idx Join:
+`select sid,sname,did,title,grade from dept,course,enroll,student where sid=studentid and majorid=did and deptid=did`
+
+## Additional queries
+
+### Behaviour for DISTINCT or GROUP BY used together with ORDER BY
+
+Following Postgres, there are 2 cases for ORDER BY:
+
+- If there is GROUP BY or DISTINCT then the sort fields must be found in the GROUP BY or DISTINCT field.
+
+  1. Positive case:
+     `select distinct sname from student order by sname`
+     `select sname from student group by sname order by sname`
+  2. Error cases:
+     `select distinct sname from student order by sid`
+     `select sname from student group by sname order by sid`
+
+- If there is no GROUP BY or DISTINCT then can sort on any field in the tables (beyond what is being projected).
+  `select sname from student order by sid`
