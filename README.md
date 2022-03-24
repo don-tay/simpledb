@@ -120,6 +120,7 @@ Done in the CreateStudentDB2.java file
 
 Hash/Sort-merge/Nested-loop Join:
 `select sid,sname,dname,title,grade from student,dept,course,enroll where sid=studentid and deptid=did and majorid=did`
+
 Idx Join:
 `select sid,sname,did,title,grade from dept,course,enroll,student where sid=studentid and majorid=did and deptid=did`
 

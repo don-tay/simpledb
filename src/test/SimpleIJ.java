@@ -71,8 +71,10 @@ public class SimpleIJ {
 			System.out.println();
 
 			Scan s = p.open();
+			int numRecords = 0;
 			// print records
 			while (s.next()) {
+				++numRecords;
 				for (String fieldName : fieldNames) {
 					int fldtype = p.schema().type(fieldName);
 					String fmt = "%" + fieldName.length();
@@ -87,6 +89,7 @@ public class SimpleIJ {
 				System.out.println();
 			}
 			tx.commit();
+			System.out.println(numRecords + " rows retrieved");
 		} catch (Exception e) {
 			e.printStackTrace();
 			tx.rollback();
